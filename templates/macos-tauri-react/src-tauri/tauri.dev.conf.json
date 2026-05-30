@@ -1,0 +1,11 @@
+{
+  "productName": "__APP_DEV_NAME__",
+  "identifier": "__DEV_BUNDLE_ID__",
+  "app": {
+    "windows": [
+      {
+        "title": "__APP_DEV_NAME__"
+      }
+    ]
+  }
+}

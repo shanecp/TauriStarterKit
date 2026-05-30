@@ -1,0 +1,4 @@
+version: 1
+display_name: "__APP_NAME__ Build And Release"
+short_description: "Run checks, bump, build, install, and open"
+default_prompt: "Use $__APP_SLUG__-build-and-release to build and locally install a __APP_NAME__ release."

@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+packages/*/dist/
+templates/*/dist/
+templates/*/src-tauri/target/
+templates/*/src-tauri/gen/schemas/
+
+# Generated sample apps
+SampleUtility/
+
+# Logs and caches
+*.log
+.cache/
+.vite/
+
+# macOS
+.DS_Store
+
+# Local app artifacts
+*.app/
+*.dmg
+*.pkg
+
+# Local scratch
+tmp/
+scratch/

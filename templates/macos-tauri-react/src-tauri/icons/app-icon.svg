@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="App icon placeholder">
+  <rect width="512" height="512" rx="112" fill="#18212f"/>
+  <rect x="92" y="92" width="328" height="328" rx="76" fill="#f5f7fb"/>
+  <path d="M160 180h192v56h-66v104h-60V236h-66z" fill="#2563eb"/>
+  <circle cx="256" cy="370" r="28" fill="#2563eb"/>
+</svg>

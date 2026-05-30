@@ -1,0 +1,25 @@
+{
+  "name": "tauri-starter-kit",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "test": "npm test --workspaces",
+    "create-app": "node scripts/create-app.mjs",
+    "validate-template": "node scripts/validate-template.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

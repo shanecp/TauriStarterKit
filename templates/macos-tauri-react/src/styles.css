@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  color: #18212f;
+  background: #f5f7fb;
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 960px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--color-app-bg);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@theme {
+  --color-app-bg: #f5f7fb;
+  --color-app-panel: #ffffff;
+  --color-app-border: #dbe2ea;
+  --color-app-muted: #64748b;
+  --color-app-ink: #18212f;
+  --color-app-accent: #2563eb;
+  --color-app-accent-hover: #1d4ed8;
+  --color-app-accent-soft: #eff6ff;
+  --color-app-subtle: #f8fafc;
+  --color-app-code: #0f172a;
+  --color-app-code-text: #f8fafc;
+  --color-app-success-bg: #ecfdf5;
+  --color-app-success-border: #a7f3d0;
+  --color-app-success-ink: #047857;
+  --color-app-error-bg: #fef2f2;
+  --color-app-error-border: #fecaca;
+  --color-app-error-ink: #991b1b;
+  --color-app-warning-bg: #fffbeb;
+  --color-app-warning-border: #fde68a;
+  --color-app-warning-ink: #92400e;
+  --color-app-info-bg: #eff6ff;
+  --color-app-info-border: #bfdbfe;
+  --color-app-info-ink: #1d4ed8;
+  --color-app-neutral-bg: #f8fafc;
+  --color-app-neutral-border: #e2e8f0;
+  --color-app-neutral-ink: #334155;
+}
+
+:root[data-theme="dark"] {
+  color: #eef3f8;
+  background: #101214;
+  color-scheme: dark;
+  --color-app-bg: #101214;
+  --color-app-panel: #171a1f;
+  --color-app-border: #2a3038;
+  --color-app-muted: #9aa4b2;
+  --color-app-ink: #eef3f8;
+  --color-app-accent: #6aa9ff;
+  --color-app-accent-hover: #8abaff;
+  --color-app-accent-soft: #172133;
+  --color-app-subtle: #20242b;
+  --color-app-code: #090b0f;
+  --color-app-code-text: #eef3f8;
+  --color-app-success-bg: #0c241b;
+  --color-app-success-border: #1f6f50;
+  --color-app-success-ink: #8ee3b5;
+  --color-app-error-bg: #2b1518;
+  --color-app-error-border: #7f2a35;
+  --color-app-error-ink: #ffb4bd;
+  --color-app-warning-bg: #2a2110;
+  --color-app-warning-border: #82651c;
+  --color-app-warning-ink: #f6d77a;
+  --color-app-info-bg: #111e32;
+  --color-app-info-border: #285a9c;
+  --color-app-info-ink: #9cc7ff;
+  --color-app-neutral-bg: #20242b;
+  --color-app-neutral-border: #343b45;
+  --color-app-neutral-ink: #c8d1dc;
+}

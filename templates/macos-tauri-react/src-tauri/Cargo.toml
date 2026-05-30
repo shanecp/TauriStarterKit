@@ -1,0 +1,19 @@
+[package]
+name = "__RUST_CRATE_NAME__"
+version = "0.1.0"
+description = "A macOS Tauri desktop utility app."
+authors = ["Elegant Media"]
+edition = "2021"
+build = "build.rs"
+
+[lib]
+name = "__RUST_LIB_NAME__"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
