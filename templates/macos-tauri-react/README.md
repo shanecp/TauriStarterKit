@@ -49,3 +49,4 @@ npm run icons:generate
 - Register commands explicitly in `src-tauri/src/lib.rs`.
 - Keep frontend pages calling typed API wrappers, not the Tauri core invoke API directly.
 - Do not expose arbitrary command execution.
+- Open user-visible files through `src/shared/file-opening` and backend-resolved paths passed to `src-tauri/src/system/file_opening`.

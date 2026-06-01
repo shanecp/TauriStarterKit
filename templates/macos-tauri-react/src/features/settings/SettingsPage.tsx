@@ -1,6 +1,6 @@
-import { Monitor, Moon, RefreshCw, Sun } from "lucide-react";
+import { Monitor, Moon, RefreshCw, RotateCcw, Sun } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 import { APP_META } from "../../shared/appMeta";
 import { Button } from "../../shared/components/Button";
@@ -9,6 +9,12 @@ import { ErrorState } from "../../shared/components/ErrorState";
 import { LoadingState } from "../../shared/components/LoadingState";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { StatusBadge } from "../../shared/components/StatusBadge";
+import {
+  EDITOR_APP_OPTIONS,
+  getStoredEditorAppName,
+  resetEditorAppName,
+  saveEditorAppName,
+} from "../../shared/file-opening";
 import { useAsyncResource } from "../../shared/hooks/useAsyncResource";
 import { useTheme } from "../../shared/theme/ThemeProvider";
 import { getDiagnostics } from "./settings.api";
@@ -34,7 +40,10 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
 
   const content =
     activeSection === "application" ? (
-      <AppearanceCard />
+      <>
+        <AppearanceCard />
+        <PreferredEditorCard />
+      </>
     ) : diagnostics && activeSection === "diagnostics" ? (
       <DiagnosticsCard diagnostics={diagnostics} />
     ) : diagnostics ? (
@@ -100,6 +109,52 @@ function AppearanceCard() {
             selected={mode === "dark"}
             onSelect={() => setMode("dark")}
           />
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function PreferredEditorCard() {
+  const [editorAppName, setEditorAppName] = useState(getStoredEditorAppName);
+
+  function selectEditor(nextEditorAppName: string) {
+    setEditorAppName(saveEditorAppName(nextEditorAppName));
+  }
+
+  function reset() {
+    setEditorAppName(resetEditorAppName());
+  }
+
+  return (
+    <Card>
+      <CardHeader
+        title="Preferred Editor"
+        description={`Choose the macOS app ${APP_META.name} uses when opening editable files.`}
+        actions={<StatusBadge label={`Current: ${editorAppName}`} tone="neutral" />}
+      />
+      <CardBody>
+        <div className="flex flex-col gap-3 md:flex-row md:items-end">
+          <label className="grid flex-1 gap-2 text-sm font-medium text-app-ink">
+            Editor
+            <select
+              value={editorAppName}
+              onChange={(event) => selectEditor(event.target.value)}
+              className="h-10 rounded-md border border-app-border bg-app-panel px-3 text-sm font-normal text-app-ink outline-none transition placeholder:text-app-muted focus:border-app-accent"
+            >
+              {EDITOR_APP_OPTIONS.map((option) => (
+                <option key={option.appName} value={option.appName}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="flex gap-2">
+            <Button onClick={reset} variant="ghost">
+              <RotateCcw size={15} />
+              Reset to VS Code
+            </Button>
+          </div>
         </div>
       </CardBody>
     </Card>

@@ -25,7 +25,7 @@ npm run tauri:dev
 
 ## Reuse The Package
 
-`packages/macos-desktop-kit` exports stable frontend utilities for apps that want dependency-style reuse: shared components, theme helpers, settings storage, refresh hooks, formatting helpers, and typed Tauri invoke helpers.
+`packages/macos-desktop-kit` exports stable frontend utilities for apps that want dependency-style reuse: shared components, theme helpers, settings storage, preferred-editor file-opening helpers, refresh hooks, formatting helpers, and typed Tauri invoke helpers.
 
 Generated apps do not depend on this package by default. The template stays self-contained so a generated app can evolve independently.
 

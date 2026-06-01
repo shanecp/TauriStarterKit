@@ -12,6 +12,10 @@ export type CommandResult = {
   duration_ms: number;
 };
 
+export type EditorAppCommandArgs = {
+  editorAppName: string;
+};
+
 export function tauriInvoke<T>(
   command: AppCommand,
   args?: Record<string, unknown>,

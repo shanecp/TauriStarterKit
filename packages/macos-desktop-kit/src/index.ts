@@ -4,6 +4,7 @@ export * from "./components/ErrorState";
 export * from "./components/LoadingState";
 export * from "./components/PageHeader";
 export * from "./components/StatusBadge";
+export * from "./file-opening";
 export * from "./format";
 export * from "./hooks/useAsyncResource";
 export * from "./hooks/useRefreshTask";

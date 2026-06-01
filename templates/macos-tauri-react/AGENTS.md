@@ -9,6 +9,7 @@
 - Never expose arbitrary command execution to the frontend.
 - All local machine actions must be whitelisted Tauri commands backed by explicit executable paths and safe argument arrays.
 - Do not interpolate user input into shell strings.
+- User-visible file opening must go through `src/shared/file-opening` and `src-tauri/src/system/file_opening`. Do not expose arbitrary frontend path opening.
 - Gracefully handle missing local tools.
 - Prefer clear loading, success, error, empty, and unavailable states over silent failures.
 - Display calendar dates in AU format `dd/mm/yyyy`; use the shared frontend formatter for UI dates.

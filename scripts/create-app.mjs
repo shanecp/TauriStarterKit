@@ -52,7 +52,7 @@ validateBundleId(devBundleId);
 await prepareDestination(destDir, Boolean(options.force));
 await cp(templateDir, destDir, {
   recursive: true,
-  filter: (source) => !source.includes(`${path.sep}node_modules${path.sep}`),
+  filter: (source) => !isGeneratedOutputPath(source),
 });
 
 const replacements = new Map([
@@ -244,6 +244,20 @@ async function pathExists(targetPath) {
 
 function isBinaryPath(file) {
   return binaryExtensions.has(path.extname(file).toLowerCase());
+}
+
+function isGeneratedOutputPath(source) {
+  const relative = path.relative(templateDir, source);
+  if (!relative) {
+    return false;
+  }
+
+  const segments = relative.split(path.sep);
+  return (
+    segments.includes("node_modules") ||
+    segments.includes("dist") ||
+    (segments[0] === "src-tauri" && segments[1] === "target")
+  );
 }
 
 function slugToSnakeCase(slug) {

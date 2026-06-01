@@ -21,6 +21,7 @@ const textExtensions = new Set([
   ".yaml",
   ".yml",
 ]);
+const ignoredDirectoryNames = new Set(["dist", "node_modules"]);
 
 await assertPath(templateDir);
 await assertMissing(path.join(templateDir, "src", "features", "network"));
@@ -30,6 +31,7 @@ await assertMissing(path.join(templateDir, "src", "features", "hosts"));
 await assertMissing(path.join(templateDir, "src", "features", "system-files"));
 
 await assertOnlySharedTauriInvoke(templateDir);
+await assertOnlySharedFileOpening(templateDir);
 await assertTemplateTokens(templateDir);
 
 await rm(validationDir, { recursive: true, force: true });
@@ -74,6 +76,39 @@ async function assertOnlySharedTauriInvoke(dir) {
 
   if (offenders.length > 0) {
     fail(`Tauri invoke must stay in src/shared/lib/tauri.ts:\n${offenders.join("\n")}`);
+  }
+}
+
+async function assertOnlySharedFileOpening(dir) {
+  const offenders = [];
+  const allowed = path.join(
+    "src-tauri",
+    "src",
+    "system",
+    "file_opening",
+    "open.rs",
+  );
+
+  for (const file of await listFiles(dir)) {
+    if (path.extname(file) !== ".rs") {
+      continue;
+    }
+
+    const source = await readFile(file, "utf8");
+    if (!source.includes("/usr/bin/open")) {
+      continue;
+    }
+
+    const relative = path.relative(dir, file);
+    if (relative !== allowed) {
+      offenders.push(relative);
+    }
+  }
+
+  if (offenders.length > 0) {
+    fail(
+      `File opening must stay in ${allowed}; do not call /usr/bin/open directly:\n${offenders.join("\n")}`,
+    );
   }
 }
 
@@ -160,6 +195,10 @@ async function listFiles(dir) {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
+      if (isIgnoredDirectory(fullPath)) {
+        continue;
+      }
+
       files.push(...await listFiles(fullPath));
     } else if (entry.isFile()) {
       files.push(fullPath);
@@ -175,6 +214,10 @@ async function listPaths(dir) {
 
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory() && isIgnoredDirectory(fullPath)) {
+      continue;
+    }
+
     paths.push(fullPath);
     if (entry.isDirectory()) {
       paths.push(...await listPaths(fullPath));
@@ -203,6 +246,20 @@ async function assertMissing(targetPath) {
 
 function isTextPath(file) {
   return textExtensions.has(path.extname(file).toLowerCase());
+}
+
+function isIgnoredDirectory(targetPath) {
+  const basename = path.basename(targetPath);
+  if (ignoredDirectoryNames.has(basename)) {
+    return true;
+  }
+
+  const segments = targetPath.split(path.sep);
+  return (
+    segments.length >= 2 &&
+    segments[segments.length - 2] === "src-tauri" &&
+    segments[segments.length - 1] === "target"
+  );
 }
 
 function run(command, args) {
