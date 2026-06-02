@@ -29,6 +29,25 @@ await assertMissing(path.join(templateDir, "src", "features", "services"));
 await assertMissing(path.join(templateDir, "src", "features", "vms"));
 await assertMissing(path.join(templateDir, "src", "features", "hosts"));
 await assertMissing(path.join(templateDir, "src", "features", "system-files"));
+await assertPath(
+  path.join(
+    templateDir,
+    ".codex",
+    "skills",
+    "__APP_SLUG__-change-ui-theme",
+    "SKILL.md",
+  ),
+);
+await assertPath(
+  path.join(
+    templateDir,
+    ".codex",
+    "skills",
+    "__APP_SLUG__-change-ui-theme",
+    "agents",
+    "openai.yaml",
+  ),
+);
 
 await assertOnlySharedTauriInvoke(templateDir);
 await assertOnlySharedFileOpening(templateDir);

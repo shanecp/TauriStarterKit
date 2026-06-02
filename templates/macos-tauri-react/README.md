@@ -33,6 +33,13 @@ Local install scripts use `~/Applications` by default. Override paths with:
 - `__INSTALL_ENV_PREFIX___SOURCE_APP`
 - `__INSTALL_ENV_PREFIX___INSTALL_DIR`
 
+## Codex Skills
+
+Project skills live in `.codex/skills`:
+
+- `$__APP_SLUG__-build-and-release` runs checks, bumps, builds, installs, and opens a local release.
+- `$__APP_SLUG__-change-ui-theme` explicitly previews and applies light/dark UI palettes.
+
 ## Icons
 
 The placeholder icon source is `src-tauri/icons/app-icon.svg`. Replace it for the app, then run:

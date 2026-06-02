@@ -55,6 +55,8 @@ coverage/
 .codex/skills/*
 !.codex/skills/__APP_SLUG__-build-and-release/
 !.codex/skills/__APP_SLUG__-build-and-release/**
+!.codex/skills/__APP_SLUG__-change-ui-theme/
+!.codex/skills/__APP_SLUG__-change-ui-theme/**
 .claude/
 .cursor/
 .windsurf/

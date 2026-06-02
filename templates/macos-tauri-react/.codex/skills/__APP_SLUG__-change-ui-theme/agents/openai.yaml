@@ -1,0 +1,6 @@
+interface:
+  display_name: "Change UI Theme"
+  short_description: "Preview and apply __APP_NAME__ UI palettes"
+  default_prompt: "Use $__APP_SLUG__-change-ui-theme to preview and apply a new __APP_NAME__ UI theme."
+policy:
+  allow_implicit_invocation: false
