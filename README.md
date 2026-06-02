@@ -27,6 +27,7 @@ Generated apps include project Codex skills under `.codex/skills`:
 
 - `$<app-slug>-build-and-release` runs checks, bumps, builds, installs, and opens a local release.
 - `$<app-slug>-change-ui-theme` explicitly previews and applies light/dark UI palettes.
+- `$<app-slug>-replace-default-icon` explicitly replaces the placeholder Tauri icon mark and regenerates icon assets.
 
 ## Reuse The Package
 

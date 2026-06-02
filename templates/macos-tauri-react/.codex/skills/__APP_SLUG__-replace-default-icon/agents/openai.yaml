@@ -1,0 +1,7 @@
+interface:
+  display_name: "Replace Default Icon"
+  short_description: "Replace the placeholder Tauri icon mark"
+  default_prompt: "Use $__APP_SLUG__-replace-default-icon to replace the default __APP_NAME__ icon mark."
+
+policy:
+  allow_implicit_invocation: false

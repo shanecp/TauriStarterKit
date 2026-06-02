@@ -48,6 +48,25 @@ await assertPath(
     "openai.yaml",
   ),
 );
+await assertPath(
+  path.join(
+    templateDir,
+    ".codex",
+    "skills",
+    "__APP_SLUG__-replace-default-icon",
+    "SKILL.md",
+  ),
+);
+await assertPath(
+  path.join(
+    templateDir,
+    ".codex",
+    "skills",
+    "__APP_SLUG__-replace-default-icon",
+    "agents",
+    "openai.yaml",
+  ),
+);
 
 await assertOnlySharedTauriInvoke(templateDir);
 await assertOnlySharedFileOpening(templateDir);

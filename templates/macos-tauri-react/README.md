@@ -39,10 +39,11 @@ Project skills live in `.codex/skills`:
 
 - `$__APP_SLUG__-build-and-release` runs checks, bumps, builds, installs, and opens a local release.
 - `$__APP_SLUG__-change-ui-theme` explicitly previews and applies light/dark UI palettes.
+- `$__APP_SLUG__-replace-default-icon` explicitly replaces the placeholder Tauri icon mark and regenerates icon assets.
 
 ## Icons
 
-The placeholder icon source is `src-tauri/icons/app-icon.svg`. Replace it for the app, then run:
+The placeholder icon source is `src-tauri/icons/app-icon.svg`. Use `$__APP_SLUG__-replace-default-icon`, or replace it manually for the app, then run:
 
 ```sh
 npm run icons:generate
