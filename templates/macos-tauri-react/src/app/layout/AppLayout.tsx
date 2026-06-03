@@ -41,7 +41,7 @@ export function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar title={route.title} subtitle={route.subtitle} />
         <main className="min-h-0 flex-1 overflow-auto px-8 py-6">
-          <div className="mx-auto max-w-7xl">{route.render(navigate)}</div>
+          <div className="min-w-0 w-full">{route.render(navigate)}</div>
         </main>
       </div>
     </div>

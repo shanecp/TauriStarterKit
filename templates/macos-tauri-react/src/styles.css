@@ -36,6 +36,31 @@ pre {
   word-break: break-word;
 }
 
+.activity-progress {
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--color-app-subtle);
+}
+
+.activity-progress__bar {
+  width: 35%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-app-accent);
+  animation: activity-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes activity-progress {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(310%);
+  }
+}
+
 @theme {
   --color-app-bg: #f5f7fb;
   --color-app-panel: #ffffff;

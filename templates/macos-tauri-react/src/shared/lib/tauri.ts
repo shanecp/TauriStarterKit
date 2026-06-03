@@ -1,5 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 
+import {
+  finishGlobalActivity,
+  startGlobalActivity,
+} from "../activity/activityStore";
+
 export type AppCommand = "get_diagnostics" | "example_ping";
 
 export type CommandResult = {
@@ -16,9 +21,20 @@ export type EditorAppCommandArgs = {
   editorAppName: string;
 };
 
-export function tauriInvoke<T>(
+const ACTIVITY_LABELS: Partial<Record<AppCommand, string>> = {
+  example_ping: "Checking backend",
+  get_diagnostics: "Loading diagnostics",
+};
+
+export async function tauriInvoke<T>(
   command: AppCommand,
   args?: Record<string, unknown>,
 ): Promise<T> {
-  return invoke<T>(command, args);
+  const activityId = startGlobalActivity(command, ACTIVITY_LABELS[command] ?? "Working");
+
+  try {
+    return await invoke<T>(command, args);
+  } finally {
+    finishGlobalActivity(activityId);
+  }
 }

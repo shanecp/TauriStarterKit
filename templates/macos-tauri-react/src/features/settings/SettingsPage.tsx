@@ -54,7 +54,12 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
     <div>
       <PageHeader
         actions={needsDiagnostics ? (
-          <Button onClick={refresh} disabled={isInitialLoading || isRefreshing}>
+          <Button
+            onClick={refresh}
+            disabled={isInitialLoading || isRefreshing}
+            loading={isRefreshing}
+            loadingLabel="Refreshing diagnostics"
+          >
             <RefreshCw size={15} />
             Refresh
           </Button>

@@ -14,7 +14,7 @@ export function useAsyncResource<T>({
   autoLoad = true,
 }: UseAsyncResourceOptions<T>) {
   const requestId = useRef(0);
-  const hasLoaded = useRef(initialValue !== undefined);
+  const [hasLoaded, setHasLoaded] = useState(initialValue !== undefined);
   const [data, setData] = useState<T | undefined>(initialValue);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +32,7 @@ export function useAsyncResource<T>({
         return;
       }
 
-      hasLoaded.current = true;
+      setHasLoaded(true);
       setData(nextData);
       setLastUpdatedAt(Date.now());
     } catch (caught) {
@@ -56,8 +56,8 @@ export function useAsyncResource<T>({
     data,
     setData,
     error,
-    isInitialLoading: isLoading && !hasLoaded.current,
-    isRefreshing: isLoading && hasLoaded.current,
+    isInitialLoading: isLoading && !hasLoaded,
+    isRefreshing: isLoading && hasLoaded,
     isLoading,
     lastUpdatedAt,
     refresh,

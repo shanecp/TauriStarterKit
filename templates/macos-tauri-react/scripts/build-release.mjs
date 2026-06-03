@@ -55,9 +55,13 @@ if (dryRun) {
 
 printDirtyStatus();
 run("npm", ["run", "build"]);
+run("npm", ["run", "lint"]);
 run("npm", ["test"]);
 run("cargo", ["test"], { cwd: path.join(rootDir, "src-tauri") });
 run("cargo", ["fmt", "--check"], { cwd: path.join(rootDir, "src-tauri") });
+run("cargo", ["clippy", "--all-targets", "--all-features", "--", "-D", "warnings"], {
+  cwd: path.join(rootDir, "src-tauri"),
+});
 
 await updateVersions(nextVersion, releaseDate);
 
@@ -157,9 +161,11 @@ function printDryRun(currentVersion, nextVersion, buildDate) {
   console.log("");
   console.log("Commands to run:");
   console.log("- npm run build");
+  console.log("- npm run lint");
   console.log("- npm test");
   console.log("- cd src-tauri && cargo test");
   console.log("- cd src-tauri && cargo fmt --check");
+  console.log("- cd src-tauri && cargo clippy --all-targets --all-features -- -D warnings");
   console.log("- npx tauri build --bundles app --ci");
   console.log(`- npm run upgrade:local (quits running ${appName} before replacement, then opens it)`);
 }

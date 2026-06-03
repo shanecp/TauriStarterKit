@@ -1,3 +1,5 @@
+#![allow(non_snake_case)] // Template crate-name placeholders are uppercase before generation.
+
 mod commands;
 mod models;
 mod system;

@@ -1,6 +1,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -58,14 +59,14 @@ export function ThemeProvider({
     document.documentElement.dataset.themeMode = mode;
   }, [effectiveTheme, mode]);
 
-  function setMode(nextMode: ThemeMode) {
+  const setMode = useCallback((nextMode: ThemeMode) => {
     setModeState(nextMode);
     writeSetting(storageNamespace, "themeMode", nextMode);
-  }
+  }, [storageNamespace]);
 
   const value = useMemo(
     () => ({ mode, effectiveTheme, setMode }),
-    [effectiveTheme, mode],
+    [effectiveTheme, mode, setMode],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

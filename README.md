@@ -31,26 +31,49 @@ Generated apps include project Codex skills under `.codex/skills`:
 
 ## Reuse The Package
 
-`packages/macos-desktop-kit` exports stable frontend utilities for apps that want dependency-style reuse: shared components, theme helpers, settings storage, preferred-editor file-opening helpers, refresh hooks, formatting helpers, and typed Tauri invoke helpers.
+`packages/macos-desktop-kit` exports stable frontend utilities for apps that want dependency-style reuse: shared components, activity/loading helpers, theme helpers, settings storage, preferred-editor file-opening helpers, refresh hooks, formatting helpers, and typed Tauri invoke helpers.
 
 Generated apps do not depend on this package by default. The template stays self-contained so a generated app can evolve independently.
+
+## Activity Indicators
+
+Use `ActivityProvider` near the app root, render `useActivity()` in the app shell, and route backend calls through `tauriInvoke` or `createTauriInvoke`. The invoke helpers start and finish activity entries with unique IDs, so overlapping commands keep the global indicator visible until all work finishes.
+
+Use command label maps for app-specific copy:
+
+```ts
+const invokeCommand = createTauriInvoke<AppCommand>({
+  example_ping: "Checking backend",
+});
+```
+
+Use `Button loading loadingLabel="..."` only on obvious initiating actions. Keep page-level disabled/busy state responsible for blocking unsafe duplicate actions.
 
 ## Validate
 
 ```sh
 npm install
+npm run typecheck
+npm run lint
 npm run build
 npm test
 npm run validate-template
+npm audit --audit-level=critical
 ```
 
 The generated app should also pass:
 
 ```sh
+npm run typecheck
+npm run lint
 npm run build
 npm test
-cd src-tauri && cargo test && cargo fmt --check
+cd src-tauri
+cargo test
+cargo fmt --check
+cargo clippy --all-targets --all-features -- -D warnings
 cd ..
+npm audit --audit-level=critical
 npm run tauri:build
 npm run release:local -- --dry-run
 ```

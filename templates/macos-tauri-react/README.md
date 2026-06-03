@@ -22,6 +22,8 @@ Production identity:
 ## Scripts
 
 ```sh
+npm run typecheck
+npm run lint
 npm run build
 npm test
 npm run tauri:build
@@ -58,3 +60,9 @@ npm run icons:generate
 - Keep frontend pages calling typed API wrappers, not the Tauri core invoke API directly.
 - Do not expose arbitrary command execution.
 - Open user-visible files through `src/shared/file-opening` and backend-resolved paths passed to `src-tauri/src/system/file_opening`.
+
+## Activity Indicators
+
+The template includes central activity tracking in `src/shared/activity`. Commands invoked through `src/shared/lib/tauri.ts` automatically show the top-bar activity indicator and keep it visible for concurrent commands until every command completes.
+
+When adding a Tauri command, add a short label to `ACTIVITY_LABELS` in `src/shared/lib/tauri.ts`. Use the shared `Button` `loading` prop only on buttons that clearly start work, and keep local disabled state for preventing unsafe duplicate actions.

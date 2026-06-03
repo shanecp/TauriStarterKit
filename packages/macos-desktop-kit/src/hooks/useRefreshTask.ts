@@ -4,7 +4,7 @@ import { compactError } from "../format";
 
 export function useRefreshTask(task: () => Promise<void>) {
   const requestId = useRef(0);
-  const hasSucceeded = useRef(false);
+  const [hasSucceeded, setHasSucceeded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
@@ -21,7 +21,7 @@ export function useRefreshTask(task: () => Promise<void>) {
         return;
       }
 
-      hasSucceeded.current = true;
+      setHasSucceeded(true);
       setLastUpdatedAt(Date.now());
     } catch (caught) {
       if (requestId.current === currentRequest) {
@@ -36,8 +36,8 @@ export function useRefreshTask(task: () => Promise<void>) {
 
   return {
     error,
-    isInitialLoading: isLoading && !hasSucceeded.current,
-    isRefreshing: isLoading && hasSucceeded.current,
+    isInitialLoading: isLoading && !hasSucceeded,
+    isRefreshing: isLoading && hasSucceeded,
     isLoading,
     lastUpdatedAt,
     refresh,

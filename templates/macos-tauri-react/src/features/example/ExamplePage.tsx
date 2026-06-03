@@ -20,7 +20,12 @@ export function ExamplePage() {
     <div>
       <PageHeader
         actions={
-          <Button onClick={refresh} disabled={isInitialLoading || isRefreshing}>
+          <Button
+            onClick={refresh}
+            disabled={isInitialLoading || isRefreshing}
+            loading={isRefreshing}
+            loadingLabel="Refreshing example command"
+          >
             <RefreshCw size={15} />
             Refresh
           </Button>
