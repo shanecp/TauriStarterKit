@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "test": "npm test --workspaces",
     "create-app": "node scripts/create-app.mjs",
+    "preview-template": "node scripts/preview-template.mjs",
     "validate-template": "node scripts/validate-template.mjs"
   },
   "devDependencies": {

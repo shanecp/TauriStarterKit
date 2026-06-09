@@ -62,6 +62,12 @@ npm run icons:generate
 - Open user-visible files through `src/shared/file-opening` and backend-resolved paths passed to `src-tauri/src/system/file_opening`.
 - Use `src/shared/notifications` for transient action feedback. Do not import `react-toastify` from feature pages.
 
+## Debugging
+
+Architecture doc: [Debugging Options](docs/architecture/32-Debugging.md).
+
+Use `npm run tauri:dev` for the default loop. Frontend edits hot reload through Vite, while Rust edits rebuild and restart the Tauri app. Use the WebKit inspector, terminal Rust logs, debug builds, LLDB, the Tauri log plugin, or CrabNebula DevTools depending on the issue.
+
 ## Activity Indicators
 
 Architecture doc: [Activity Indicator Architecture](docs/architecture/30-Activity-Indicators.md).
