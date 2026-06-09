@@ -1,22 +1,13 @@
 import { useActivity } from "../../shared/activity/useActivity";
 
-type TopBarProps = {
-  title: string;
-  subtitle: string;
-};
-
-export function TopBar({ title, subtitle }: TopBarProps) {
+export function TopBar() {
   const activity = useActivity();
   const extraActivityCount = Math.max(0, activity.activeCount - 1);
   const activityLabel = activity.latestLabel ?? "Working";
 
   return (
     <header className="border-b border-app-border bg-app-panel px-8 py-5">
-      <div className="flex min-w-0 flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-semibold tracking-normal text-app-ink">{title}</h1>
-          <p className="mt-1 max-w-3xl text-sm text-app-muted">{subtitle}</p>
-        </div>
+      <div className="flex min-w-0 flex-wrap items-center justify-end gap-4">
         {activity.isActive ? (
           <div
             role="status"

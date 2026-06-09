@@ -84,6 +84,8 @@ await rename(nextDir, previewDir);
 console.log(`Prepared template preview at ${path.relative(rootDir, previewDir)}.`);
 
 if (!prepareOnly) {
+  const previewDevPort = await readPreviewDevPort(previewDir);
+  stopExistingViteOnPort(previewDevPort);
   run("npm", ["run", "tauri:dev"], { cwd: previewDir });
 }
 
@@ -119,6 +121,112 @@ async function readJson(file) {
 
 async function writeJson(file, data) {
   await writeFile(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+async function readPreviewDevPort(dir) {
+  const config = await readJson(path.join(dir, "src-tauri", "tauri.conf.json"));
+  const devUrl = config?.build?.devUrl;
+
+  if (typeof devUrl !== "string") {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(devUrl);
+    return parsed.port ? Number(parsed.port) : null;
+  } catch {
+    return null;
+  }
+}
+
+function stopExistingViteOnPort(port) {
+  if (!port) {
+    return;
+  }
+
+  const pids = findListeningPids(port);
+  if (pids.length === 0) {
+    return;
+  }
+
+  const processes = pids.map((pid) => ({
+    pid,
+    command: processCommand(pid),
+  }));
+  const viteProcesses = processes.filter(({ command }) =>
+    /\bvite\b/i.test(command),
+  );
+  const otherProcesses = processes.filter(
+    ({ pid }) => !viteProcesses.some((processInfo) => processInfo.pid === pid),
+  );
+
+  if (otherProcesses.length > 0) {
+    fail(
+      [
+        `Port ${port} is already in use by a non-Vite process:`,
+        ...otherProcesses.map(({ pid, command }) => `- pid ${pid}: ${command}`),
+      ].join("\n"),
+    );
+  }
+
+  for (const { pid, command } of viteProcesses) {
+    console.log(`Stopping existing Vite dev server on port ${port} (pid ${pid}).`);
+    killProcess(pid, command, port);
+  }
+
+  waitForPortToClose(port);
+}
+
+function findListeningPids(port) {
+  const result = spawnSync(
+    "lsof",
+    ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-t"],
+    { encoding: "utf8" },
+  );
+
+  if (result.status !== 0 && result.status !== 1) {
+    fail(result.stderr.trim() || `Failed to inspect port ${port}.`);
+  }
+
+  return result.stdout
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((pid) => Number(pid))
+    .filter((pid) => Number.isInteger(pid) && pid > 0);
+}
+
+function processCommand(pid) {
+  const result = spawnSync("ps", ["-p", String(pid), "-o", "command="], {
+    encoding: "utf8",
+  });
+
+  return result.stdout.trim();
+}
+
+function killProcess(pid, command, port) {
+  const result = spawnSync("kill", [String(pid)], { encoding: "utf8" });
+
+  if (result.status !== 0) {
+    fail(
+      result.stderr.trim() ||
+        `Failed to stop Vite process on port ${port} (pid ${pid}: ${command}).`,
+    );
+  }
+}
+
+function waitForPortToClose(port) {
+  const startedAt = Date.now();
+
+  while (findListeningPids(port).length > 0) {
+    if (Date.now() - startedAt > 5000) {
+      fail(`Timed out waiting for port ${port} to become available.`);
+    }
+    sleep(100);
+  }
+}
+
+function sleep(durationMs) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, durationMs);
 }
 
 async function pathExists(targetPath) {

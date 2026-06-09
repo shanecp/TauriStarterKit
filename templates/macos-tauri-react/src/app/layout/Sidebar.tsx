@@ -1,8 +1,11 @@
 import { ChevronRight } from "lucide-react";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { APP_META } from "../../shared/appMeta";
 import { BUILD_LABEL } from "../../shared/buildInfo";
 import { sidebarItems } from "../routes";
+import { clampSidebarWidth, sidebarConfig } from "./sidebarConfig";
 
 type SidebarProps = {
   currentPath: string;
@@ -10,8 +13,77 @@ type SidebarProps = {
 };
 
 export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [sidebarWidth, setSidebarWidth] = useState(sidebarConfig.defaultWidth);
+  const isResizable = sidebarConfig.resizeMode === "resizable";
+
+  const activeGroupLabels = useMemo(
+    () =>
+      sidebarItems
+        .filter((item) =>
+          item.children?.some((child) => child.path === currentPath),
+        )
+        .map((item) => item.label),
+    [currentPath],
+  );
+
+  useEffect(() => {
+    setCollapsedGroups((current) => {
+      let changed = false;
+      const next = new Set(current);
+
+      activeGroupLabels.forEach((label) => {
+        if (next.delete(label)) {
+          changed = true;
+        }
+      });
+
+      return changed ? next : current;
+    });
+  }, [activeGroupLabels]);
+
+  function toggleGroup(label: string) {
+    setCollapsedGroups((current) => {
+      const next = new Set(current);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
+  }
+
+  function startResize(event: ReactMouseEvent<HTMLDivElement>) {
+    if (!isResizable) {
+      return;
+    }
+
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = sidebarWidth;
+
+    function onMouseMove(moveEvent: MouseEvent) {
+      const nextWidth = startWidth + moveEvent.clientX - startX;
+      setSidebarWidth(clampSidebarWidth(nextWidth));
+    }
+
+    function onMouseUp() {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    }
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  }
+
   return (
-    <aside className="flex h-screen w-72 shrink-0 flex-col border-r border-app-border bg-app-panel">
+    <aside
+      className="relative flex h-screen shrink-0 flex-col border-r border-app-border bg-app-panel"
+      style={{ width: `${clampSidebarWidth(sidebarWidth)}px` }}
+    >
       <div className="border-b border-app-border px-5 py-5">
         <div className="text-lg font-semibold tracking-normal">{APP_META.name}</div>
       </div>
@@ -24,6 +96,12 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
             const hasActiveChild = item.children?.some(
               (child) => child.path === currentPath,
             );
+            const isExpanded = item.children
+              ? !collapsedGroups.has(item.label)
+              : false;
+            const groupId = `sidebar-group-${item.label
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")}`;
 
             return (
               <div key={item.label}>
@@ -36,23 +114,37 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                     {Icon ? <Icon size={17} /> : null}
                     <span>{item.label}</span>
                   </button>
-                ) : (
-                  <div
-                    className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${
-                      hasActiveChild ? "text-app-ink" : "text-app-muted"
+                ) : item.children ? (
+                  <button
+                    type="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={groupId}
+                    onClick={() => toggleGroup(item.label)}
+                    className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium transition ${
+                      hasActiveChild
+                        ? "text-app-ink"
+                        : "text-app-muted hover:bg-app-subtle hover:text-app-ink"
                     }`}
                   >
                     {Icon ? <Icon size={17} /> : null}
                     <span className="flex-1">{item.label}</span>
                     <ChevronRight
                       size={15}
-                      className={hasActiveChild ? "rotate-90" : "rotate-90 opacity-50"}
+                      className={`transition ${isExpanded ? "rotate-90" : ""}`}
                     />
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-app-muted">
+                    {Icon ? <Icon size={17} /> : null}
+                    <span className="flex-1">{item.label}</span>
                   </div>
                 )}
 
-                {item.children ? (
-                  <div className="ml-5 mt-1 space-y-1 border-l border-app-border pl-3">
+                {item.children && isExpanded ? (
+                  <div
+                    id={groupId}
+                    className="ml-5 mt-1 space-y-1 border-l border-app-border pl-3"
+                  >
                     {item.children.map((child) => (
                       <button
                         key={child.path}
@@ -73,6 +165,15 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
           {BUILD_LABEL}
         </div>
       </nav>
+      {isResizable ? (
+        <div
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize sidebar"
+          onMouseDown={startResize}
+          className="absolute right-[-3px] top-0 h-full w-1.5 cursor-col-resize bg-transparent transition hover:bg-app-accent"
+        />
+      ) : null}
     </aside>
   );
 }

@@ -1,4 +1,4 @@
-import { ArrowRight, FlaskConical, MonitorCog, Settings } from "lucide-react";
+import { ArrowRight, FlaskConical, MonitorCog, Settings, Table2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Button } from "../../shared/components/Button";
@@ -19,11 +19,18 @@ type DashboardWorkflow = {
 
 const workflows: DashboardWorkflow[] = [
   {
-    title: "Example Command",
-    description: "Call a harmless Tauri command through a typed feature API wrapper.",
-    path: "/example",
+    title: "Content Loading",
+    description: "Use loading states, refresh actions, and toast feedback.",
+    path: "/examples/loading",
     icon: FlaskConical,
-    badge: "Tauri",
+    badge: "Example",
+  },
+  {
+    title: "Data Tables",
+    description: "Browse sortable, filterable, paginated demo data.",
+    path: "/examples/data-table",
+    icon: Table2,
+    badge: "Table",
   },
   {
     title: "Appearance",

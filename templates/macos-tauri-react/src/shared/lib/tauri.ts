@@ -26,15 +26,47 @@ const ACTIVITY_LABELS: Partial<Record<AppCommand, string>> = {
   get_diagnostics: "Loading diagnostics",
 };
 
-export async function tauriInvoke<T>(
-  command: AppCommand,
+export type TauriInvokeOptions<CommandName extends string = string> = {
+  activityLabel?: string | false;
+  activityLabels?: Partial<Record<CommandName, string>>;
+};
+
+export async function tauriInvoke<T, CommandName extends string = AppCommand>(
+  command: CommandName,
   args?: Record<string, unknown>,
+  options: TauriInvokeOptions<CommandName> = {},
 ): Promise<T> {
-  const activityId = startGlobalActivity(command, ACTIVITY_LABELS[command] ?? "Working");
+  const activityLabel =
+    options.activityLabel === false
+      ? null
+      : options.activityLabel ??
+        options.activityLabels?.[command] ??
+        ACTIVITY_LABELS[command as AppCommand] ??
+        "Working";
+  const activityId = activityLabel
+    ? startGlobalActivity(command, activityLabel)
+    : null;
 
   try {
     return await invoke<T>(command, args);
   } finally {
-    finishGlobalActivity(activityId);
+    if (activityId) {
+      finishGlobalActivity(activityId);
+    }
   }
+}
+
+export function createTauriInvoke<CommandName extends string>(
+  activityLabels: Partial<Record<CommandName, string>> = {},
+) {
+  return function invokeCommand<T>(
+    command: CommandName,
+    args?: Record<string, unknown>,
+    options: TauriInvokeOptions<CommandName> = {},
+  ): Promise<T> {
+    return tauriInvoke<T, CommandName>(command, args, {
+      activityLabels,
+      ...options,
+    });
+  };
 }

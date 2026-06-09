@@ -16,7 +16,14 @@ import {
   saveEditorAppName,
 } from "../../shared/file-opening";
 import { useAsyncResource } from "../../shared/hooks/useAsyncResource";
+import {
+  getStoredDefaultPaginationSize,
+  PAGINATION_SIZE_OPTIONS,
+  saveDefaultPaginationSize,
+  type PaginationSize,
+} from "../../shared/settings/applicationSettings";
 import { useTheme } from "../../shared/theme/ThemeProvider";
+import { themePalettes, type ThemePalette } from "../../shared/theme/theme";
 import { getDiagnostics } from "./settings.api";
 import type { DiagnosticsResponse } from "./settings.types";
 
@@ -26,6 +33,7 @@ type SettingsPageProps = {
 
 export function SettingsPage({ activeSection }: SettingsPageProps) {
   const needsDiagnostics = activeSection !== "application";
+  const showRefresh = activeSection === "diagnostics";
   const loadDiagnostics = useCallback(() => getDiagnostics(), []);
   const {
     data: diagnostics,
@@ -41,6 +49,7 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
   const content =
     activeSection === "application" ? (
       <>
+        <ApplicationPreferencesCard />
         <AppearanceCard />
         <PreferredEditorCard />
       </>
@@ -53,7 +62,7 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
   return (
     <div>
       <PageHeader
-        actions={needsDiagnostics ? (
+        actions={showRefresh ? (
           <Button
             onClick={refresh}
             disabled={isInitialLoading || isRefreshing}
@@ -77,7 +86,12 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
 }
 
 function AppearanceCard() {
-  const { mode, effectiveTheme, setMode } = useTheme();
+  const { mode, palette, effectiveTheme, setMode, setPalette } = useTheme();
+  const useSystemTheme = mode === "system";
+
+  function toggleSystemTheme(enabled: boolean) {
+    setMode(enabled ? "system" : effectiveTheme);
+  }
 
   return (
     <Card>
@@ -92,29 +106,106 @@ function AppearanceCard() {
         }
       />
       <CardBody>
-        <div className="grid gap-3 md:grid-cols-3">
-          <ThemeOption
-            icon={Monitor}
-            label="System"
-            description="Follow macOS appearance."
-            selected={mode === "system"}
-            onSelect={() => setMode("system")}
-          />
-          <ThemeOption
-            icon={Sun}
-            label="Light"
-            description="Use the light interface."
-            selected={mode === "light"}
-            onSelect={() => setMode("light")}
-          />
-          <ThemeOption
-            icon={Moon}
-            label="Dark"
-            description="Use the dark interface."
-            selected={mode === "dark"}
-            onSelect={() => setMode("dark")}
-          />
+        <div className="grid gap-4">
+          <label className="flex items-center justify-between gap-4 rounded-md border border-app-border bg-app-subtle px-4 py-3">
+            <span className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-md border border-app-border bg-app-panel text-app-accent">
+                <Monitor size={18} />
+              </span>
+              <span>
+                <span className="block text-sm font-medium text-app-ink">
+                  Use system theme
+                </span>
+                <span className="block text-sm text-app-muted">
+                  Current: {effectiveTheme}
+                </span>
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={useSystemTheme}
+              onChange={(event) => toggleSystemTheme(event.target.checked)}
+              className="h-5 w-5 accent-app-accent"
+            />
+          </label>
+
+          {!useSystemTheme ? (
+            <>
+              <div className="grid gap-3 md:grid-cols-2">
+                <ThemeOption
+                  icon={Sun}
+                  label="Light"
+                  description="Use the light interface."
+                  selected={mode === "light"}
+                  onSelect={() => setMode("light")}
+                />
+                <ThemeOption
+                  icon={Moon}
+                  label="Dark"
+                  description="Use the dark interface."
+                  selected={mode === "dark"}
+                  onSelect={() => setMode("dark")}
+                />
+              </div>
+              <label className="grid gap-2 text-sm font-medium text-app-ink">
+                Theme
+                <select
+                  value={palette}
+                  onChange={(event) =>
+                    setPalette(event.target.value as ThemePalette)
+                  }
+                  className="h-10 rounded-md border border-app-border bg-app-panel px-3 text-sm font-normal text-app-ink outline-none transition placeholder:text-app-muted focus:border-app-accent"
+                >
+                  {themePalettes.map((themePalette) => (
+                    <option key={themePalette} value={themePalette}>
+                      {themePaletteLabel(themePalette)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          ) : null}
         </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function ApplicationPreferencesCard() {
+  const [paginationSize, setPaginationSize] = useState(
+    getStoredDefaultPaginationSize,
+  );
+
+  function selectPaginationSize(nextSize: PaginationSize) {
+    setPaginationSize(saveDefaultPaginationSize(nextSize));
+  }
+
+  return (
+    <Card>
+      <CardHeader
+        title="Application"
+        description="Defaults for generated list and table screens."
+        actions={
+          <StatusBadge label={`Page size: ${paginationSize}`} tone="neutral" />
+        }
+      />
+      <CardBody>
+        <label className="grid max-w-sm gap-2 text-sm font-medium text-app-ink">
+          Default pagination size
+          <select
+            value={paginationSize}
+            onChange={(event) =>
+              selectPaginationSize(Number(event.target.value) as PaginationSize)
+            }
+            className="h-10 rounded-md border border-app-border bg-app-panel px-3 text-sm font-normal text-app-ink outline-none transition focus:border-app-accent"
+          >
+            {PAGINATION_SIZE_OPTIONS.map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </label>
       </CardBody>
     </Card>
   );
@@ -164,6 +255,16 @@ function PreferredEditorCard() {
       </CardBody>
     </Card>
   );
+}
+
+function themePaletteLabel(palette: ThemePalette): string {
+  const labels: Record<ThemePalette, string> = {
+    blue: "Blue",
+    green: "Green",
+    rose: "Rose",
+  };
+
+  return labels[palette];
 }
 
 function ThemeOption({

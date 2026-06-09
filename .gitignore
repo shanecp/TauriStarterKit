@@ -20,6 +20,9 @@ SampleUtility/
 # macOS
 .DS_Store
 
+# Local IDE settings
+.idea/
+
 # Local app artifacts
 *.app/
 *.dmg

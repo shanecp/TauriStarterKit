@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isThemeMode, resolveEffectiveTheme } from "./theme";
+import { isThemeMode, isThemePalette, resolveEffectiveTheme } from "./theme";
 
 describe("theme helpers", () => {
   it("validates stored theme modes", () => {
@@ -10,6 +10,13 @@ describe("theme helpers", () => {
     expect(isThemeMode("sepia")).toBe(false);
   });
 
+  it("validates stored theme palettes", () => {
+    expect(isThemePalette("blue")).toBe(true);
+    expect(isThemePalette("green")).toBe(true);
+    expect(isThemePalette("rose")).toBe(true);
+    expect(isThemePalette("orange")).toBe(false);
+  });
+
   it("resolves system theme preference", () => {
     expect(resolveEffectiveTheme("system", true)).toBe("dark");
     expect(resolveEffectiveTheme("system", false)).toBe("light");
@@ -17,4 +24,3 @@ describe("theme helpers", () => {
     expect(resolveEffectiveTheme("dark", false)).toBe("dark");
   });
 });
-

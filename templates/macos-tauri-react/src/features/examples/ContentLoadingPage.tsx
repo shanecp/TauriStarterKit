@@ -1,5 +1,5 @@
-import { RefreshCw } from "lucide-react";
-import { useCallback } from "react";
+import { Bell, RefreshCw, Timer } from "lucide-react";
+import { useCallback, useState } from "react";
 
 import { Button } from "../../shared/components/Button";
 import { Card, CardBody, CardHeader } from "../../shared/components/Card";
@@ -7,39 +7,66 @@ import { ErrorState } from "../../shared/components/ErrorState";
 import { LoadingState } from "../../shared/components/LoadingState";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { StatusBadge } from "../../shared/components/StatusBadge";
-import { formatTimestamp } from "../../shared/lib/format";
 import { useAsyncResource } from "../../shared/hooks/useAsyncResource";
-import { examplePing } from "./example.api";
+import { formatTimestamp } from "../../shared/lib/format";
+import { useNotifications } from "../../shared/notifications/useNotifications";
+import { examplePing } from "../example/example.api";
 
-export function ExamplePage() {
+export function ContentLoadingPage() {
+  const notifications = useNotifications();
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
   const load = useCallback(() => examplePing(), []);
   const { data, error, isInitialLoading, isRefreshing, lastUpdatedAt, refresh } =
     useAsyncResource({ load });
+
+  function runLoadingDemo() {
+    setIsDemoLoading(true);
+    window.setTimeout(() => {
+      setIsDemoLoading(false);
+      notifications.success("Loading demo completed.");
+    }, 900);
+  }
 
   return (
     <div>
       <PageHeader
         actions={
-          <Button
-            onClick={refresh}
-            disabled={isInitialLoading || isRefreshing}
-            loading={isRefreshing}
-            loadingLabel="Refreshing example command"
-          >
-            <RefreshCw size={15} />
-            Refresh
-          </Button>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              onClick={runLoadingDemo}
+              disabled={isDemoLoading}
+              loading={isDemoLoading}
+              loadingLabel="Running loading demo"
+            >
+              <Timer size={15} />
+              Loading Demo
+            </Button>
+            <Button onClick={() => notifications.info("Toast message demo.")}>
+              <Bell size={15} />
+              Toast Demo
+            </Button>
+            <Button
+              onClick={refresh}
+              disabled={isInitialLoading || isRefreshing}
+              loading={isRefreshing}
+              loadingLabel="Refreshing example command"
+            >
+              <RefreshCw size={15} />
+              Refresh
+            </Button>
+          </div>
         }
       />
 
       <div className="grid gap-5">
+        {isDemoLoading ? <LoadingState label="Running loading demo" /> : null}
         {isInitialLoading ? <LoadingState label="Loading example command" /> : null}
         {error ? <ErrorState message={error} /> : null}
         {data ? (
           <Card>
             <CardHeader
               title="Example Ping"
-              description="A harmless backend command wired through a typed API wrapper."
+              description="Typed API wrapper with loading, refresh, and error states."
               actions={
                 <StatusBadge
                   label={isRefreshing ? "Refreshing" : "Available"}

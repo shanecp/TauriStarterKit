@@ -1,0 +1,37 @@
+# Feature Update Plan
+
+- [x] When the app opens, the default size is too small. Set the default size to 80% of the screen.
+- [x] Sidebar - the down collapse button/icon doesn't work.
+- [x] Sidebar resizing should be a developer configurable option. It can be on fixed by default, some apps may need user resizable, with a min/max size.
+- [x] When buttons are pressed, it triggers the refresh message. However for very fast actions, the message is not shown (as it looks like a flicker).
+- [x] Settings > About. Don't need 'Refresh' button.
+- [x] Main page body
+  - [x] Current top page body has a title, and a subheading. This might be limiting real estate for some content. Remove this, and allow breadcrumbs to show the current page. This might required the loader to be elevated to a higer level.
+- [x] Examples > Add various examples.
+  - [x] Content Loading page
+      - Loading indicator demo
+      - Add toas message demo
+  - [x] Data Tables
+    - Add a page with a data table and various actions (sort, filter, pagination, row actions, etc).
+    - Settings > Application > Add default pagination size as 100. selectable options, 10, 50, 100, 250, 500.
+    - All large data sets should be paginated by default.
+    - Sort by latest record first
+    - Delete should trigger an optional confirmation.
+    - Table cols should have max width limits.
+    - Number/date/time columns should be right aligned.
+    - Table should have row hover highliting.
+  - [x] Forms
+    - Add a page with various form elements (text input, select, multi-select, date picker, file upload, etc).
+    - Form elements should have placeholders, or a helper text icon/buton (optional).
+    - Group related form elements together.
+    - Create/edit forms should be trigerred from a `Create/Add/New` button. It should not be on an index/browse/table page.
+  - [x] Interactions
+    - Add click to copy option.
+    - Tables - add copy table button/option. It copies only the current page (to be pasted to excel)
+  - [x] Content
+    - Optional code syntax highlighting.
+- [x] Breadcrumbs
+  - [x] Add breadcrumbs to the top of each page, below the top bar. It should show the current page, and allow navigation back to parent pages.
+- [x] Settings > Appearance
+  - [x] Add option for "Use system theme" (default on). When off, show options for "Light" and "Dark", and "Theme"
+  - [x] Add a Theme Switcher. When on it will switch the theme. (doesn't apply if default/light/dark modes selected)

@@ -1,10 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ActivityStore } from "./activityStore";
 
 describe("ActivityStore", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("keeps concurrent activities active until each activity finishes", () => {
-    const store = new ActivityStore();
+    const store = new ActivityStore(0);
     const firstId = store.start({
       command: "first_command",
       label: "First command",
@@ -30,5 +34,26 @@ describe("ActivityStore", () => {
 
     expect(store.getSnapshot().activeCount).toBe(0);
     expect(store.getSnapshot().latestLabel).toBeNull();
+  });
+
+  it("keeps very fast activity visible for the configured minimum duration", () => {
+    vi.useFakeTimers();
+
+    const store = new ActivityStore(300);
+    const id = store.start({
+      command: "fast_command",
+      label: "Fast command",
+      startedAt: 1000,
+    });
+
+    store.finish(id, 1100);
+
+    expect(store.getSnapshot().activeCount).toBe(1);
+
+    vi.advanceTimersByTime(199);
+    expect(store.getSnapshot().activeCount).toBe(1);
+
+    vi.advanceTimersByTime(1);
+    expect(store.getSnapshot().activeCount).toBe(0);
   });
 });

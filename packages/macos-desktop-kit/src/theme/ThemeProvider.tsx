@@ -10,16 +10,20 @@ import {
 
 import { readSetting, writeSetting } from "../settings/storage";
 import {
+  isThemePalette,
   isThemeMode,
   resolveEffectiveTheme,
   type EffectiveTheme,
   type ThemeMode,
+  type ThemePalette,
 } from "./theme";
 
 type ThemeContextValue = {
   mode: ThemeMode;
+  palette: ThemePalette;
   effectiveTheme: EffectiveTheme;
   setMode: (mode: ThemeMode) => void;
+  setPalette: (palette: ThemePalette) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -37,6 +41,9 @@ export function ThemeProvider({
 }) {
   const [mode, setModeState] = useState<ThemeMode>(() =>
     readSetting(storageNamespace, "themeMode", isThemeMode, "system"),
+  );
+  const [palette, setPaletteState] = useState<ThemePalette>(() =>
+    readSetting(storageNamespace, "themePalette", isThemePalette, "blue"),
   );
   const [systemPrefersDark, setSystemPrefersDark] = useState(getSystemPrefersDark);
 
@@ -57,16 +64,22 @@ export function ThemeProvider({
   useEffect(() => {
     document.documentElement.dataset.theme = effectiveTheme;
     document.documentElement.dataset.themeMode = mode;
-  }, [effectiveTheme, mode]);
+    document.documentElement.dataset.themePalette = palette;
+  }, [effectiveTheme, mode, palette]);
 
   const setMode = useCallback((nextMode: ThemeMode) => {
     setModeState(nextMode);
     writeSetting(storageNamespace, "themeMode", nextMode);
   }, [storageNamespace]);
 
+  const setPalette = useCallback((nextPalette: ThemePalette) => {
+    setPaletteState(nextPalette);
+    writeSetting(storageNamespace, "themePalette", nextPalette);
+  }, [storageNamespace]);
+
   const value = useMemo(
-    () => ({ mode, effectiveTheme, setMode }),
-    [effectiveTheme, mode, setMode],
+    () => ({ mode, palette, effectiveTheme, setMode, setPalette }),
+    [effectiveTheme, mode, palette, setMode, setPalette],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

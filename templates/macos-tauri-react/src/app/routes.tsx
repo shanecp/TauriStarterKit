@@ -3,7 +3,11 @@ import { FlaskConical, LayoutDashboard, Settings } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { DashboardPage } from "../features/dashboard/DashboardPage";
-import { ExamplePage } from "../features/example/ExamplePage";
+import { ContentPage } from "../features/examples/ContentPage";
+import { ContentLoadingPage } from "../features/examples/ContentLoadingPage";
+import { DataTablePage } from "../features/examples/DataTablePage";
+import { FormsPage } from "../features/examples/FormsPage";
+import { InteractionsPage } from "../features/examples/InteractionsPage";
 import { SettingsPage } from "../features/settings/SettingsPage";
 
 export type SidebarItem = {
@@ -18,9 +22,15 @@ export type SidebarItem = {
 
 export type AppRoute = {
   path: string;
+  aliases?: string[];
   title: string;
-  subtitle: string;
+  breadcrumbs: BreadcrumbItem[];
   render: (navigate: (path: string) => void) => ReactNode;
+};
+
+export type BreadcrumbItem = {
+  label: string;
+  path?: string;
 };
 
 export const sidebarItems: SidebarItem[] = [
@@ -30,9 +40,15 @@ export const sidebarItems: SidebarItem[] = [
     icon: LayoutDashboard,
   },
   {
-    label: "Example",
-    path: "/example",
+    label: "Examples",
     icon: FlaskConical,
+    children: [
+      { label: "Content Loading", path: "/examples/loading" },
+      { label: "Data Tables", path: "/examples/data-table" },
+      { label: "Forms", path: "/examples/forms" },
+      { label: "Interactions", path: "/examples/interactions" },
+      { label: "Content", path: "/examples/content" },
+    ],
   },
   {
     label: "Settings",
@@ -49,35 +65,95 @@ export const routes: AppRoute[] = [
   {
     path: "/",
     title: "Dashboard",
-    subtitle: "Starter overview for app shell, settings, and safe commands.",
+    breadcrumbs: [{ label: "Dashboard" }],
     render: (navigate) => <DashboardPage onNavigate={navigate} />,
   },
   {
-    path: "/example",
-    title: "Example",
-    subtitle: "Safe Tauri command pattern with loading, refresh, and error states.",
-    render: () => <ExamplePage />,
+    path: "/examples/loading",
+    aliases: ["/example"],
+    title: "Content Loading",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Content Loading" },
+    ],
+    render: () => <ContentLoadingPage />,
+  },
+  {
+    path: "/examples/data-table",
+    title: "Data Tables",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Data Tables" },
+    ],
+    render: () => <DataTablePage />,
+  },
+  {
+    path: "/examples/forms",
+    title: "Forms",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Forms" },
+    ],
+    render: () => <FormsPage />,
+  },
+  {
+    path: "/examples/interactions",
+    title: "Interactions",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Interactions" },
+    ],
+    render: () => <InteractionsPage />,
+  },
+  {
+    path: "/examples/content",
+    title: "Content",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Content" },
+    ],
+    render: () => <ContentPage />,
   },
   {
     path: "/settings/application",
     title: "Application Settings",
-    subtitle: "Appearance preferences for this app.",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Settings", path: "/settings/application" },
+      { label: "Application" },
+    ],
     render: () => <SettingsPage activeSection="application" />,
   },
   {
     path: "/settings/about",
     title: "About",
-    subtitle: "Application identity and build environment.",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Settings", path: "/settings/application" },
+      { label: "About" },
+    ],
     render: () => <SettingsPage activeSection="about" />,
   },
   {
     path: "/settings/diagnostics",
     title: "Diagnostics",
-    subtitle: "Local macOS environment details.",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Settings", path: "/settings/application" },
+      { label: "Diagnostics" },
+    ],
     render: () => <SettingsPage activeSection="diagnostics" />,
   },
 ];
 
 export function getRoute(path: string): AppRoute {
-  return routes.find((route) => route.path === path) ?? routes[0];
+  return (
+    routes.find((route) => route.path === path || route.aliases?.includes(path)) ??
+    routes[0]
+  );
 }

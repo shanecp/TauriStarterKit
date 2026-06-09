@@ -20,12 +20,19 @@ type ActivityStart = {
   startedAt?: number;
 };
 
+export const DEFAULT_ACTIVITY_MINIMUM_VISIBLE_MS = 350;
+
 let nextActivityId = 1;
 
 export class ActivityStore {
   private activities = new Map<string, Activity>();
+  private finishTimers = new Map<string, ReturnType<typeof setTimeout>>();
   private listeners = new Set<() => void>();
   private snapshot = this.createSnapshot();
+
+  constructor(
+    private readonly minimumVisibleMs = DEFAULT_ACTIVITY_MINIMUM_VISIBLE_MS,
+  ) {}
 
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
@@ -47,18 +54,42 @@ export class ActivityStore {
     return id;
   }
 
-  finish(id: string) {
-    if (!this.activities.delete(id)) {
+  finish(id: string, finishedAt = Date.now()) {
+    const activity = this.activities.get(id);
+    if (!activity || this.finishTimers.has(id)) {
       return;
     }
-    this.emit();
+
+    const visibleMs = Math.max(0, finishedAt - activity.startedAt);
+    const remainingMs = Math.max(0, this.minimumVisibleMs - visibleMs);
+
+    if (remainingMs > 0) {
+      const timer = setTimeout(() => {
+        this.finishTimers.delete(id);
+        this.deleteActivity(id);
+      }, remainingMs);
+      this.finishTimers.set(id, timer);
+      return;
+    }
+
+    this.deleteActivity(id);
   }
 
   clear() {
+    this.finishTimers.forEach((timer) => clearTimeout(timer));
+    this.finishTimers.clear();
+
     if (this.activities.size === 0) {
       return;
     }
     this.activities.clear();
+    this.emit();
+  }
+
+  private deleteActivity(id: string) {
+    if (!this.activities.delete(id)) {
+      return;
+    }
     this.emit();
   }
 
