@@ -1,6 +1,6 @@
 # Activity Indicator Architecture
 
-The app shows global progress for backend work through a non-blocking activity indicator in the top bar. It is visual feedback only. It does not block the page, keep a history, or replace feature-owned loading and error state.
+The app shows global progress for backend work through a non-blocking activity indicator at the top of the content area. It is visual feedback only. It does not block the page, keep a history, or replace feature-owned loading and error state.
 
 ## Flow
 
@@ -32,20 +32,20 @@ src/app/layout/TopBar.tsx
   |
   | renders status chip and activity-progress bar
   v
-TopBar shows latest label while any activity is active
+TopBar appears with the latest label while any activity is active
 ```
 
-When the Tauri call resolves or rejects, `tauriInvoke` finishes the specific activity ID in a `finally` block. The top bar returns to idle when all activity IDs have finished.
+When the Tauri call resolves or rejects, `tauriInvoke` finishes the specific activity ID in a `finally` block. The top activity indicator is removed when all activity IDs have finished.
 
 ## Ownership
 
-`src/shared/lib/tauri.ts` owns the mapping from app commands to user-visible activity labels. This keeps labels consistent and avoids scattering top-bar feedback through feature pages.
+`src/shared/lib/tauri.ts` owns the mapping from app commands to user-visible activity labels. This keeps labels consistent and avoids scattering activity feedback through feature pages.
 
 `src/shared/activity/activityStore.ts` owns concurrent activity tracking. Each activity gets a unique ID. Overlapping backend calls keep the indicator visible until each call has finished.
 
 `src/shared/activity/ActivityProvider.tsx` provides the store near the app root. `src/shared/activity/useActivity.ts` reads a stable snapshot with `useSyncExternalStore`.
 
-`src/app/layout/TopBar.tsx` is the only app-shell renderer for the global activity state. It shows the latest label and a count when more than one activity is active.
+`src/app/layout/TopBar.tsx` is the only app-shell renderer for the global activity state. It renders only while activity is active, and shows the latest label plus a count when more than one activity is active.
 
 ## Boundaries
 
@@ -72,11 +72,15 @@ Do not call the Tauri core invoke API directly outside `src/shared/lib/tauri.ts`
 
 ## Button Loading
 
-Shared `Button` supports `loading` and `loadingLabel` for obvious initiating actions. Use this selectively when the clicked button itself needs feedback. The top-bar indicator remains the default app-wide feedback for backend work.
+Shared `Button` supports `loading` and `loadingLabel` for obvious initiating actions. Use this selectively when the clicked button itself needs feedback. The top activity indicator remains the default app-wide feedback for backend work.
+
+## Content Loading
+
+Shared `LoadingState` uses the same `activity-progress` bar inside the loader box. Use it for page-owned loading and refreshing state, especially when existing content stays visible while work continues.
 
 ## Styling
 
-The top-bar progress bar uses:
+The activity progress bar uses:
 
 ```text
 .activity-progress

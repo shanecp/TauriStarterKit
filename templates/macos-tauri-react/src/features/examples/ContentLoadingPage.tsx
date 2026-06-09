@@ -1,5 +1,5 @@
 import { Bell, RefreshCw, Timer } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { Button } from "../../shared/components/Button";
 import { Card, CardBody, CardHeader } from "../../shared/components/Card";
@@ -12,10 +12,21 @@ import { formatTimestamp } from "../../shared/lib/format";
 import { useNotifications } from "../../shared/notifications/useNotifications";
 import { examplePing } from "../example/example.api";
 
+const REFRESH_DEMO_DELAY_MS = 20_000;
+
 export function ContentLoadingPage() {
   const notifications = useNotifications();
   const [isDemoLoading, setIsDemoLoading] = useState(false);
-  const load = useCallback(() => examplePing(), []);
+  const hasLoadedExample = useRef(false);
+  const load = useCallback(async () => {
+    if (hasLoadedExample.current) {
+      await delay(REFRESH_DEMO_DELAY_MS);
+    }
+
+    const response = await examplePing();
+    hasLoadedExample.current = true;
+    return response;
+  }, []);
   const { data, error, isInitialLoading, isRefreshing, lastUpdatedAt, refresh } =
     useAsyncResource({ load });
 
@@ -61,6 +72,9 @@ export function ContentLoadingPage() {
       <div className="grid gap-5">
         {isDemoLoading ? <LoadingState label="Running loading demo" /> : null}
         {isInitialLoading ? <LoadingState label="Loading example command" /> : null}
+        {isRefreshing ? (
+          <LoadingState label="Refreshing example command for 20 seconds" />
+        ) : null}
         {error ? <ErrorState message={error} /> : null}
         {data ? (
           <Card>
@@ -89,6 +103,10 @@ export function ContentLoadingPage() {
       </div>
     </div>
   );
+}
+
+function delay(durationMs: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, durationMs));
 }
 
 function Detail({ label, value }: { label: string; value: string }) {

@@ -57,7 +57,7 @@ loading and actionRunning flags
 empty and unavailable states
 ```
 
-Do not emit automatic success or error toasts from `tauriInvoke`. Routine loads and refreshes should keep using local page state plus the top-bar activity indicator.
+Do not emit automatic success or error toasts from `tauriInvoke`. Routine loads and refreshes should keep using local page state plus the top activity indicator.
 
 ## Activity Vs Notifications
 
@@ -65,7 +65,7 @@ The activity indicator answers: "Is backend work running right now?"
 
 Toast notifications answer: "What just happened?"
 
-An action can use both. A Tauri call can show top-bar activity while it runs, then the page can show a toast after the action resolves. The page still owns any durable result or error panel.
+An action can use both. A Tauri call can show top activity while it runs, then the page can show a toast after the action resolves. The page still owns any durable result or error panel.
 
 ## Styling
 

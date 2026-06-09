@@ -37,7 +37,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-app-bg text-app-ink">
+    <div className="flex h-screen overflow-hidden border-t border-app-border bg-app-bg text-app-ink">
       <Sidebar currentPath={route.path} onNavigate={navigate} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />

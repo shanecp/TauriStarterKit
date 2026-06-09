@@ -51,7 +51,10 @@ export function InteractionsPage() {
               <code className="truncate rounded-md bg-app-code px-3 py-2 text-sm text-app-code-text">
                 {item.value}
               </code>
-              <Button variant="ghost" onClick={() => copyValue(item.label, item.value)}>
+              <Button
+                variant="secondary"
+                onClick={() => copyValue(item.label, item.value)}
+              >
                 <ClipboardCopy size={15} />
                 Copy
               </Button>

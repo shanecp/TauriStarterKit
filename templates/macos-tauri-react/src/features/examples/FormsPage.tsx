@@ -1,5 +1,5 @@
 import { HelpCircle, Pencil, Plus, Save, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "../../shared/components/Button";
 import { Card, CardBody, CardHeader } from "../../shared/components/Card";
@@ -20,6 +20,8 @@ type DemoFormRecord = {
 type DemoFormDraft = Omit<DemoFormRecord, "id"> & {
   id?: number;
 };
+
+type FormsPageView = "list" | "create" | "edit";
 
 const ownerOptions = ["Avery", "Morgan", "Taylor", "Jordan"];
 
@@ -52,17 +54,45 @@ function createEmptyDraft(): DemoFormDraft {
   };
 }
 
-export function FormsPage() {
+export function FormsPage({
+  view = "list",
+  onNavigate,
+}: {
+  view?: FormsPageView;
+  onNavigate: (path: string) => void;
+}) {
   const notifications = useNotifications();
   const [records, setRecords] = useState(initialRecords);
   const [draft, setDraft] = useState<DemoFormDraft | null>(null);
+  const isEditing = view !== "list";
+
+  useEffect(() => {
+    if (view === "list") {
+      setDraft(null);
+      return;
+    }
+
+    if (view === "create") {
+      setDraft((current) => (current && !current.id ? current : createEmptyDraft()));
+      return;
+    }
+
+    setDraft((current) => (current?.id ? current : records[0] ? { ...records[0] } : null));
+  }, [records, view]);
 
   function startCreate() {
     setDraft(createEmptyDraft());
+    onNavigate("/examples/forms/new");
   }
 
   function startEdit(record: DemoFormRecord) {
     setDraft({ ...record });
+    onNavigate("/examples/forms/edit");
+  }
+
+  function closeEditor() {
+    setDraft(null);
+    onNavigate("/examples/forms");
   }
 
   function saveDraft() {
@@ -84,27 +114,27 @@ export function FormsPage() {
       notifications.success("Form created.");
     }
 
-    setDraft(null);
+    closeEditor();
   }
 
   return (
     <div>
       <PageHeader
         actions={
-          draft ? null : (
+          !isEditing ? (
             <Button onClick={startCreate}>
               <Plus size={15} />
               New
             </Button>
-          )
+          ) : null
         }
       />
 
-      {draft ? (
+      {isEditing && draft ? (
         <FormEditor
           draft={draft}
           onChange={setDraft}
-          onCancel={() => setDraft(null)}
+          onCancel={closeEditor}
           onSave={saveDraft}
         />
       ) : (
@@ -155,6 +185,8 @@ function FormEditor({
   onCancel: () => void;
   onSave: () => void;
 }) {
+  const [showScheduleHelp, setShowScheduleHelp] = useState(false);
+
   function updateField<Key extends keyof DemoFormDraft>(
     key: Key,
     value: DemoFormDraft[Key],
@@ -210,12 +242,25 @@ function FormEditor({
               <h2 className="text-sm font-semibold text-app-ink">Scheduling</h2>
               <button
                 type="button"
-                title="Use AU date display in read-only UI."
-                className="text-app-muted hover:text-app-ink"
+                aria-label="Show scheduling helper text"
+                aria-expanded={showScheduleHelp}
+                aria-controls="scheduling-helper-text"
+                title="Show scheduling helper text"
+                onClick={() => setShowScheduleHelp((current) => !current)}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-md text-app-muted transition hover:bg-app-subtle hover:text-app-ink"
               >
                 <HelpCircle size={15} />
               </button>
             </div>
+            {showScheduleHelp ? (
+              <p
+                id="scheduling-helper-text"
+                className="rounded-md border border-app-border bg-app-subtle px-3 py-2 text-sm leading-6 text-app-muted"
+              >
+                Choose one or more owners, then set a due date. Read-only dates are
+                displayed in AU format.
+              </p>
+            ) : null}
             <label className="grid gap-2 text-sm font-medium text-app-ink">
               Owners
               <select

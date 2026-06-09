@@ -92,6 +92,11 @@ export function DataTablePage() {
     getStoredDefaultPaginationSize,
   );
   const [confirmDeletes, setConfirmDeletes] = useState(true);
+  const [showRowSelection, setShowRowSelection] = useState(true);
+  const [selectedRecordIds, setSelectedRecordIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [deleteCandidate, setDeleteCandidate] = useState<ExampleRecord | null>(null);
 
   const filteredRecords = useMemo(
     () => filterRecords(records, query),
@@ -110,6 +115,20 @@ export function DataTablePage() {
     setPage(1);
   }, [pageSize, query]);
 
+  useEffect(() => {
+    const recordIds = new Set(records.map((record) => record.id));
+    setSelectedRecordIds((current) => {
+      const next = new Set([...current].filter((id) => recordIds.has(id)));
+      return next.size === current.size ? current : next;
+    });
+  }, [records]);
+
+  const selectedOnPage = pagination.items.filter((record) =>
+    selectedRecordIds.has(record.id),
+  ).length;
+  const isPageSelected =
+    pagination.items.length > 0 && selectedOnPage === pagination.items.length;
+
   function updateSort(key: SortKey) {
     setSort((current) => ({
       key,
@@ -118,21 +137,61 @@ export function DataTablePage() {
     }));
   }
 
-  async function copyCurrentPage() {
+  async function copyTableData() {
     try {
       await copyTextToClipboard(recordsToTsv(pagination.items));
-      notifications.success("Current page copied.");
+      notifications.success("Table data copied.");
     } catch (error) {
       notifications.error(error instanceof Error ? error.message : "Copy failed.");
     }
   }
 
-  function deleteRecord(record: ExampleRecord) {
-    if (confirmDeletes && !window.confirm(`Delete ${record.name}?`)) {
+  function toggleRecordSelection(recordId: number, checked: boolean) {
+    setSelectedRecordIds((current) => {
+      const next = new Set(current);
+      if (checked) {
+        next.add(recordId);
+      } else {
+        next.delete(recordId);
+      }
+      return next;
+    });
+  }
+
+  function togglePageSelection(checked: boolean) {
+    setSelectedRecordIds((current) => {
+      const next = new Set(current);
+      pagination.items.forEach((record) => {
+        if (checked) {
+          next.add(record.id);
+        } else {
+          next.delete(record.id);
+        }
+      });
+      return next;
+    });
+  }
+
+  function requestDelete(record: ExampleRecord) {
+    if (confirmDeletes) {
+      setDeleteCandidate(record);
       return;
     }
 
+    deleteRecord(record);
+  }
+
+  function deleteRecord(record: ExampleRecord) {
     setRecords((current) => current.filter((item) => item.id !== record.id));
+    setSelectedRecordIds((current) => {
+      if (!current.has(record.id)) {
+        return current;
+      }
+
+      const next = new Set(current);
+      next.delete(record.id);
+      return next;
+    });
     notifications.warning(`${record.name} deleted.`);
   }
 
@@ -140,9 +199,9 @@ export function DataTablePage() {
     <div>
       <PageHeader
         actions={
-          <Button onClick={copyCurrentPage}>
+          <Button onClick={copyTableData}>
             <ClipboardCopy size={15} />
-            Copy Page
+            Copy Table Data
           </Button>
         }
       />
@@ -183,11 +242,20 @@ export function DataTablePage() {
             <label className="flex h-10 items-center gap-2 text-sm font-medium text-app-ink">
               <input
                 type="checkbox"
+                checked={showRowSelection}
+                onChange={(event) => setShowRowSelection(event.target.checked)}
+                className="h-4 w-4 accent-app-accent"
+              />
+              Row Selector
+            </label>
+            <label className="flex h-10 items-center gap-2 text-sm font-medium text-app-ink">
+              <input
+                type="checkbox"
                 checked={confirmDeletes}
                 onChange={(event) => setConfirmDeletes(event.target.checked)}
                 className="h-4 w-4 accent-app-accent"
               />
-              Confirm delete
+              Confirm Delete
             </label>
           </div>
 
@@ -196,6 +264,19 @@ export function DataTablePage() {
               <table className="min-w-full border-collapse text-sm">
                 <thead className="bg-app-subtle text-app-muted">
                   <tr>
+                    {showRowSelection ? (
+                      <th scope="col" className="w-10 px-3 py-2 text-left">
+                        <input
+                          type="checkbox"
+                          aria-label="Select all rows on this page"
+                          checked={isPageSelected}
+                          onChange={(event) =>
+                            togglePageSelection(event.target.checked)
+                          }
+                          className="h-4 w-4 accent-app-accent"
+                        />
+                      </th>
+                    ) : null}
                     {columns.map((column) => (
                       <th
                         key={column.key}
@@ -233,6 +314,19 @@ export function DataTablePage() {
                       key={record.id}
                       className="border-t border-app-border transition hover:bg-app-subtle"
                     >
+                      {showRowSelection ? (
+                        <td className="px-3 py-2">
+                          <input
+                            type="checkbox"
+                            aria-label={`Select ${record.name}`}
+                            checked={selectedRecordIds.has(record.id)}
+                            onChange={(event) =>
+                              toggleRecordSelection(record.id, event.target.checked)
+                            }
+                            className="h-4 w-4 accent-app-accent"
+                          />
+                        </td>
+                      ) : null}
                       {columns.map((column) => (
                         <td
                           key={column.key}
@@ -261,7 +355,7 @@ export function DataTablePage() {
                           </Button>
                           <Button
                             variant="ghost"
-                            onClick={() => deleteRecord(record)}
+                            onClick={() => requestDelete(record)}
                             className="h-8"
                           >
                             <Trash2 size={14} />
@@ -279,6 +373,9 @@ export function DataTablePage() {
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-app-muted">
             <span>
               Showing {pagination.items.length} of {pagination.totalItems}
+              {showRowSelection && selectedRecordIds.size > 0
+                ? ` - ${selectedRecordIds.size} selected`
+                : ""}
             </span>
             <div className="flex gap-2">
               <Button
@@ -303,6 +400,54 @@ export function DataTablePage() {
           </div>
         </CardBody>
       </Card>
+
+      {deleteCandidate ? (
+        <ConfirmDeleteDialog
+          record={deleteCandidate}
+          onCancel={() => setDeleteCandidate(null)}
+          onConfirm={() => {
+            deleteRecord(deleteCandidate);
+            setDeleteCandidate(null);
+          }}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+function ConfirmDeleteDialog({
+  record,
+  onCancel,
+  onConfirm,
+}: {
+  record: ExampleRecord;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-delete-title"
+        className="w-full max-w-sm rounded-lg border border-app-border bg-app-panel p-5 shadow-xl"
+      >
+        <h2 id="confirm-delete-title" className="text-base font-semibold text-app-ink">
+          Confirm Delete
+        </h2>
+        <p className="mt-2 text-sm leading-6 text-app-muted">
+          Delete {record.name}? This removes the row from the demo data table.
+        </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button variant="ghost" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button onClick={onConfirm}>
+            <Trash2 size={15} />
+            Delete
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

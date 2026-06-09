@@ -23,7 +23,7 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
     () =>
       sidebarItems
         .filter((item) =>
-          item.children?.some((child) => child.path === currentPath),
+          item.children?.some((child) => isPathActive(currentPath, child.path)),
         )
         .map((item) => item.label),
     [currentPath],
@@ -92,9 +92,9 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
         <div className="space-y-2">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
-            const isActive = item.path === currentPath;
+            const isActive = item.path ? isPathActive(currentPath, item.path) : false;
             const hasActiveChild = item.children?.some(
-              (child) => child.path === currentPath,
+              (child) => isPathActive(currentPath, child.path),
             );
             const isExpanded = item.children
               ? !collapsedGroups.has(item.label)
@@ -150,7 +150,7 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                         key={child.path}
                         type="button"
                         onClick={() => onNavigate(child.path)}
-                        className={childClass(child.path === currentPath)}
+                        className={childClass(isPathActive(currentPath, child.path))}
                       >
                         {child.label}
                       </button>
@@ -175,6 +175,13 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
         />
       ) : null}
     </aside>
+  );
+}
+
+function isPathActive(currentPath: string, targetPath: string): boolean {
+  return (
+    currentPath === targetPath ||
+    (targetPath !== "/" && currentPath.startsWith(`${targetPath}/`))
   );
 }
 

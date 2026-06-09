@@ -62,6 +62,18 @@ npm run icons:generate
 - Open user-visible files through `src/shared/file-opening` and backend-resolved paths passed to `src-tauri/src/system/file_opening`.
 - Use `src/shared/notifications` for transient action feedback. Do not import `react-toastify` from feature pages.
 
+Architecture docs:
+
+- [Main Interface Architecture](docs/architecture/10-Main-Interface.md)
+- [Theme Customisation](docs/architecture/20-ThemeCustomisation.md)
+- [Activity Indicator Architecture](docs/architecture/30-Activity-Indicators.md)
+- [Toast Notification Architecture](docs/architecture/31-Toast-Notifications.md)
+- [Debugging Options](docs/architecture/32-Debugging.md)
+- [Data Table Patterns](docs/architecture/40-Data-Tables.md)
+- [Form Patterns](docs/architecture/41-Forms.md)
+- [Content Loading Patterns](docs/architecture/42-Content-Loading.md)
+- [Syntax Highlighting](docs/architecture/43-Syntax-Highlighting.md)
+
 ## Debugging
 
 Architecture doc: [Debugging Options](docs/architecture/32-Debugging.md).
@@ -72,7 +84,7 @@ Use `npm run tauri:dev` for the default loop. Frontend edits hot reload through 
 
 Architecture doc: [Activity Indicator Architecture](docs/architecture/30-Activity-Indicators.md).
 
-The template includes central activity tracking in `src/shared/activity`. Commands invoked through `src/shared/lib/tauri.ts` automatically show the top-bar activity indicator and keep it visible for concurrent commands until every command completes.
+The template includes central activity tracking in `src/shared/activity`. Commands invoked through `src/shared/lib/tauri.ts` automatically show the top activity indicator and keep it visible for concurrent commands until every command completes.
 
 When adding a Tauri command, add a short label to `ACTIVITY_LABELS` in `src/shared/lib/tauri.ts`. Use the shared `Button` `loading` prop only on buttons that clearly start work, and keep local disabled state for preventing unsafe duplicate actions.
 
@@ -82,4 +94,4 @@ Architecture doc: [Toast Notification Architecture](docs/architecture/31-Toast-N
 
 The template includes transient notification support in `src/shared/notifications`. Mounting happens in `src/app/App.tsx`; feature pages call `useNotifications()` for explicit action outcomes such as copy, open, save, and command completion.
 
-Toasts do not keep history and should not replace `ErrorState`, result panels, loading states, or the top-bar activity indicator. See `docs/architecture/31-Toast-Notifications.md`.
+Toasts do not keep history and should not replace `ErrorState`, result panels, loading states, or the top activity indicator. See `docs/architecture/31-Toast-Notifications.md`.

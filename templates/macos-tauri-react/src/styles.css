@@ -246,37 +246,125 @@ pre {
 }
 
 :root[data-theme-palette="green"] {
+  color: #11231f;
+  background: #f1faf6;
+  --color-app-bg: #f1faf6;
+  --color-app-panel: #fbfffd;
+  --color-app-border: #c8ddd4;
+  --color-app-muted: #5d756d;
+  --color-app-ink: #11231f;
   --color-app-accent: #059669;
   --color-app-accent-hover: #047857;
   --color-app-accent-soft: #ecfdf5;
-  --color-app-info-bg: #ecfeff;
-  --color-app-info-border: #a5f3fc;
+  --color-app-subtle: #e8f5ef;
+  --color-app-code: #10231e;
+  --color-app-code-text: #eafff6;
+  --color-app-success-bg: #e9fbf2;
+  --color-app-success-border: #98e7bf;
+  --color-app-success-ink: #047857;
+  --color-app-error-bg: #fff1f2;
+  --color-app-error-border: #fecdd3;
+  --color-app-error-ink: #be123c;
+  --color-app-warning-bg: #fff8e6;
+  --color-app-warning-border: #f6d98b;
+  --color-app-warning-ink: #8a5a0a;
+  --color-app-info-bg: #e6f7fb;
+  --color-app-info-border: #99dce8;
   --color-app-info-ink: #0e7490;
+  --color-app-neutral-bg: #eef7f3;
+  --color-app-neutral-border: #c8ddd4;
+  --color-app-neutral-ink: #2f5147;
 }
 
 :root[data-theme="dark"][data-theme-palette="green"] {
+  color: #eef8f2;
+  background: #081511;
+  --color-app-bg: #081511;
+  --color-app-panel: #101f19;
+  --color-app-border: #28463a;
+  --color-app-muted: #94b3a6;
+  --color-app-ink: #eef8f2;
   --color-app-accent: #5ee1aa;
   --color-app-accent-hover: #86efc1;
   --color-app-accent-soft: #0d2a21;
+  --color-app-subtle: #182a22;
+  --color-app-code: #06100d;
+  --color-app-code-text: #dcfce7;
+  --color-app-success-bg: #0b261b;
+  --color-app-success-border: #287a55;
+  --color-app-success-ink: #8ee3b5;
+  --color-app-error-bg: #2d1218;
+  --color-app-error-border: #883244;
+  --color-app-error-ink: #ffb4c4;
+  --color-app-warning-bg: #2c210d;
+  --color-app-warning-border: #8a661c;
+  --color-app-warning-ink: #f6d77a;
   --color-app-info-bg: #102b31;
   --color-app-info-border: #1f6f78;
   --color-app-info-ink: #a5f3fc;
+  --color-app-neutral-bg: #182a22;
+  --color-app-neutral-border: #315244;
+  --color-app-neutral-ink: #c6dbd2;
 }
 
 :root[data-theme-palette="rose"] {
+  color: #2b1822;
+  background: #fff7f9;
+  --color-app-bg: #fff7f9;
+  --color-app-panel: #ffffff;
+  --color-app-border: #ecd2db;
+  --color-app-muted: #7b6070;
+  --color-app-ink: #2b1822;
   --color-app-accent: #db2777;
   --color-app-accent-hover: #be185d;
   --color-app-accent-soft: #fdf2f8;
-  --color-app-info-bg: #f5f3ff;
-  --color-app-info-border: #ddd6fe;
+  --color-app-subtle: #fff0f5;
+  --color-app-code: #2b1020;
+  --color-app-code-text: #fff1f7;
+  --color-app-success-bg: #ecfdf5;
+  --color-app-success-border: #a7f3d0;
+  --color-app-success-ink: #047857;
+  --color-app-error-bg: #fff1f2;
+  --color-app-error-border: #fecdd3;
+  --color-app-error-ink: #be123c;
+  --color-app-warning-bg: #fff7ed;
+  --color-app-warning-border: #fed7aa;
+  --color-app-warning-ink: #9a3412;
+  --color-app-info-bg: #f4f0ff;
+  --color-app-info-border: #d8caff;
   --color-app-info-ink: #6d28d9;
+  --color-app-neutral-bg: #fff4f7;
+  --color-app-neutral-border: #ecd2db;
+  --color-app-neutral-ink: #5b3749;
 }
 
 :root[data-theme="dark"][data-theme-palette="rose"] {
+  color: #fff1f7;
+  background: #170d13;
+  --color-app-bg: #170d13;
+  --color-app-panel: #21131c;
+  --color-app-border: #442738;
+  --color-app-muted: #c0a2b2;
+  --color-app-ink: #fff1f7;
   --color-app-accent: #f472b6;
   --color-app-accent-hover: #f9a8d4;
   --color-app-accent-soft: #321527;
+  --color-app-subtle: #2b1a25;
+  --color-app-code: #0d070b;
+  --color-app-code-text: #fff1f7;
+  --color-app-success-bg: #0d2419;
+  --color-app-success-border: #246b4c;
+  --color-app-success-ink: #8ee3b5;
+  --color-app-error-bg: #33141e;
+  --color-app-error-border: #8f3352;
+  --color-app-error-ink: #ffb3cd;
+  --color-app-warning-bg: #2d1f0c;
+  --color-app-warning-border: #895f1a;
+  --color-app-warning-ink: #f6d77a;
   --color-app-info-bg: #251a39;
   --color-app-info-border: #674ea1;
   --color-app-info-ink: #d8b4fe;
+  --color-app-neutral-bg: #2b1a25;
+  --color-app-neutral-border: #563246;
+  --color-app-neutral-ink: #e4c7d6;
 }

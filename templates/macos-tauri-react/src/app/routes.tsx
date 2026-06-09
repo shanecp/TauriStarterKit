@@ -97,7 +97,29 @@ export const routes: AppRoute[] = [
       { label: "Examples", path: "/examples/loading" },
       { label: "Forms" },
     ],
-    render: () => <FormsPage />,
+    render: (navigate) => <FormsPage onNavigate={navigate} />,
+  },
+  {
+    path: "/examples/forms/new",
+    title: "Create Form",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Forms", path: "/examples/forms" },
+      { label: "Create Form" },
+    ],
+    render: (navigate) => <FormsPage view="create" onNavigate={navigate} />,
+  },
+  {
+    path: "/examples/forms/edit",
+    title: "Edit Form",
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Examples", path: "/examples/loading" },
+      { label: "Forms", path: "/examples/forms" },
+      { label: "Edit Form" },
+    ],
+    render: (navigate) => <FormsPage view="edit" onNavigate={navigate} />,
   },
   {
     path: "/examples/interactions",
