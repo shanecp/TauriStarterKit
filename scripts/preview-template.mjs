@@ -151,7 +151,7 @@ function stopExistingViteOnPort(port) {
 
   const processes = pids.map((pid) => ({
     pid,
-    command: processCommand(pid),
+    command: processCommand(pid, port),
   }));
   const viteProcesses = processes.filter(({ command }) =>
     /\bvite\b/i.test(command),
@@ -195,12 +195,54 @@ function findListeningPids(port) {
     .filter((pid) => Number.isInteger(pid) && pid > 0);
 }
 
-function processCommand(pid) {
-  const result = spawnSync("ps", ["-p", String(pid), "-o", "command="], {
+function processCommand(pid, port) {
+  return (
+    processField(pid, "command") ||
+    processField(pid, "comm") ||
+    processNameFromLsof(pid, port) ||
+    "unknown process"
+  );
+}
+
+function processField(pid, field) {
+  const result = spawnSync("ps", ["-p", String(pid), "-o", `${field}=`], {
     encoding: "utf8",
   });
 
+  if (result.status !== 0) {
+    return "";
+  }
+
   return result.stdout.trim();
+}
+
+function processNameFromLsof(pid, port) {
+  const result = spawnSync(
+    "lsof",
+    [
+      "-nP",
+      "+c",
+      "0",
+      "-a",
+      "-p",
+      String(pid),
+      `-iTCP:${port}`,
+      "-sTCP:LISTEN",
+      "-F",
+      "c",
+    ],
+    { encoding: "utf8" },
+  );
+
+  if (result.status !== 0) {
+    return "";
+  }
+
+  const commandField = result.stdout
+    .split("\n")
+    .find((line) => line.startsWith("c"));
+
+  return commandField?.slice(1).trim() ?? "";
 }
 
 function killProcess(pid, command, port) {
