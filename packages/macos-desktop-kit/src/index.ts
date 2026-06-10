@@ -11,6 +11,7 @@ export * from "./file-opening";
 export * from "./format";
 export * from "./hooks/useAsyncResource";
 export * from "./hooks/useRefreshTask";
+export * from "./long-running-tasks";
 export * from "./notifications";
 export * from "./settings/storage";
 export * from "./tauri";

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { FlaskConical, LayoutDashboard, Settings } from "lucide-react";
+import { FlaskConical, LayoutDashboard, ListChecks, Settings } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { DashboardPage } from "../features/dashboard/DashboardPage";
@@ -8,15 +8,19 @@ import { ContentLoadingPage } from "../features/examples/ContentLoadingPage";
 import { DataTablePage } from "../features/examples/DataTablePage";
 import { FormsPage } from "../features/examples/FormsPage";
 import { InteractionsPage } from "../features/examples/InteractionsPage";
+import { LongRunningTaskPreviewPage } from "../features/long-running-tasks/LongRunningTaskPreviewPage";
+import { longRunningTaskPreviews } from "../features/long-running-tasks/longRunningTaskPreviews";
 import { SettingsPage } from "../features/settings/SettingsPage";
 
 export type SidebarItem = {
   label: string;
   path?: string;
+  longRunningTaskKey?: string;
   icon?: LucideIcon;
   children?: Array<{
     label: string;
     path: string;
+    longRunningTaskKey?: string;
   }>;
 };
 
@@ -43,12 +47,25 @@ export const sidebarItems: SidebarItem[] = [
     label: "Examples",
     icon: FlaskConical,
     children: [
-      { label: "Content Loading", path: "/examples/loading" },
+      {
+        label: "Content Loading",
+        path: "/examples/loading",
+        longRunningTaskKey: "examples.long-running-task",
+      },
       { label: "Data Tables", path: "/examples/data-table" },
       { label: "Forms", path: "/examples/forms" },
       { label: "Interactions", path: "/examples/interactions" },
       { label: "Content", path: "/examples/content" },
     ],
+  },
+  {
+    label: "Long Running Tasks",
+    icon: ListChecks,
+    children: longRunningTaskPreviews.map((preview) => ({
+      label: preview.label,
+      path: preview.path,
+      longRunningTaskKey: preview.taskKey,
+    })),
   },
   {
     label: "Settings",
@@ -141,6 +158,16 @@ export const routes: AppRoute[] = [
     ],
     render: () => <ContentPage />,
   },
+  ...longRunningTaskPreviews.map((preview): AppRoute => ({
+    path: preview.path,
+    title: preview.label,
+    breadcrumbs: [
+      { label: "Dashboard", path: "/" },
+      { label: "Long Running Tasks", path: longRunningTaskPreviews[0].path },
+      { label: preview.label },
+    ],
+    render: () => <LongRunningTaskPreviewPage preview={preview} />,
+  })),
   {
     path: "/settings/application",
     title: "Application Settings",

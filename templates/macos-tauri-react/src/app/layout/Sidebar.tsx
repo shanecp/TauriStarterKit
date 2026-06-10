@@ -1,9 +1,10 @@
-import { ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight, LoaderCircle } from "lucide-react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { APP_META } from "../../shared/appMeta";
 import { BUILD_LABEL } from "../../shared/buildInfo";
+import { useLongRunningTask } from "../../shared/long-running-tasks";
 import { sidebarItems } from "../routes";
 import { clampSidebarWidth, sidebarConfig } from "./sidebarConfig";
 
@@ -112,7 +113,13 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                     className={navClass(isActive)}
                   >
                     {Icon ? <Icon size={17} /> : null}
-                    <span>{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    {item.longRunningTaskKey ? (
+                      <LongRunningTaskNavStatus
+                        taskKey={item.longRunningTaskKey}
+                        label={item.label}
+                      />
+                    ) : null}
                   </button>
                 ) : item.children ? (
                   <button
@@ -127,7 +134,13 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                     }`}
                   >
                     {Icon ? <Icon size={17} /> : null}
-                    <span className="flex-1">{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    {item.longRunningTaskKey ? (
+                      <LongRunningTaskNavStatus
+                        taskKey={item.longRunningTaskKey}
+                        label={item.label}
+                      />
+                    ) : null}
                     <ChevronRight
                       size={15}
                       className={`transition ${isExpanded ? "rotate-90" : ""}`}
@@ -136,7 +149,13 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                 ) : (
                   <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-app-muted">
                     {Icon ? <Icon size={17} /> : null}
-                    <span className="flex-1">{item.label}</span>
+                    <span className="min-w-0 flex-1 truncate">{item.label}</span>
+                    {item.longRunningTaskKey ? (
+                      <LongRunningTaskNavStatus
+                        taskKey={item.longRunningTaskKey}
+                        label={item.label}
+                      />
+                    ) : null}
                   </div>
                 )}
 
@@ -152,7 +171,15 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
                         onClick={() => onNavigate(child.path)}
                         className={childClass(isPathActive(currentPath, child.path))}
                       >
-                        {child.label}
+                        <span className="min-w-0 flex-1 truncate">
+                          {child.label}
+                        </span>
+                        {child.longRunningTaskKey ? (
+                          <LongRunningTaskNavStatus
+                            taskKey={child.longRunningTaskKey}
+                            label={child.label}
+                          />
+                        ) : null}
                       </button>
                     ))}
                   </div>
@@ -194,9 +221,43 @@ function navClass(active: boolean): string {
 }
 
 function childClass(active: boolean): string {
-  return `block w-full rounded-md px-3 py-2 text-left text-sm transition ${
+  return `flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition ${
     active
       ? "bg-app-accent-soft text-app-accent"
       : "text-app-muted hover:bg-app-subtle hover:text-app-ink"
   }`;
+}
+
+function LongRunningTaskNavStatus({
+  taskKey,
+  label,
+}: {
+  taskKey: string;
+  label: string;
+}) {
+  const task = useLongRunningTask(taskKey);
+
+  if (!task) {
+    return <span className="h-4 w-4 shrink-0" aria-hidden="true" />;
+  }
+
+  if (task.status === "processing") {
+    return (
+      <LoaderCircle
+        size={14}
+        aria-label={`${label} processing`}
+        className="h-4 w-4 shrink-0 animate-spin text-app-accent"
+        role="img"
+      />
+    );
+  }
+
+  return (
+    <CheckCircle2
+      size={14}
+      aria-label={`${label} complete`}
+      className="h-4 w-4 shrink-0 text-app-success"
+      role="img"
+    />
+  );
 }

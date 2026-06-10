@@ -11,6 +11,7 @@ src/shared/components/OnPageLoadingIndicator.tsx
 src/shared/components/ErrorState.tsx
 src/shared/components/Button.tsx
 src/shared/lib/tauri.ts
+src/shared/long-running-tasks/
 ```
 
 ## Local State
@@ -62,6 +63,17 @@ Refresh failed.
 ```
 
 Toasts should not replace `OnPageLoadingIndicator`, `PageTopLoadingIndicator`, inline errors, empty states, unavailable states, or result panels.
+
+## Long-Running Tasks
+
+Long-running task continuity is separate from content loading. Use it only for named background workflows that should remain visible in persistent navigation while the owning page is unmounted.
+
+Do not move page data, refresh state, table rows, form state, or normal fetch results into `src/shared/long-running-tasks`.
+
+The template has two demos:
+
+- `ContentLoadingPage` includes a small named-task example beside the local loading examples.
+- The `Long Running Tasks` sidebar group has three standalone pages with 20-second simulated tasks for inspecting cross-page continuity.
 
 ## Refresh
 

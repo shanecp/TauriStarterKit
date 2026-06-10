@@ -9,15 +9,26 @@ import { PageHeader } from "../../shared/components/PageHeader";
 import { StatusBadge } from "../../shared/components/StatusBadge";
 import { useAsyncResource } from "../../shared/hooks/useAsyncResource";
 import { formatTimestamp } from "../../shared/lib/format";
+import {
+  useClearCompletedLongRunningTaskOnVisit,
+  useLongRunningTask,
+  useLongRunningTaskActions,
+} from "../../shared/long-running-tasks";
 import { useNotifications } from "../../shared/notifications/useNotifications";
 import { examplePing } from "../example/example.api";
 
 const REFRESH_DEMO_DELAY_MS = 20_000;
+const LONG_RUNNING_TASK_KEY = "examples.long-running-task";
+const LONG_RUNNING_TASK_DELAY_MS = 8_000;
 
 export function ContentLoadingPage() {
   const notifications = useNotifications();
+  const longRunningTask = useLongRunningTask(LONG_RUNNING_TASK_KEY);
+  const { startLongRunningTask, completeLongRunningTask } =
+    useLongRunningTaskActions();
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const hasLoadedExample = useRef(false);
+  useClearCompletedLongRunningTaskOnVisit(LONG_RUNNING_TASK_KEY);
   const load = useCallback(async () => {
     if (hasLoadedExample.current) {
       await delay(REFRESH_DEMO_DELAY_MS);
@@ -43,6 +54,36 @@ export function ContentLoadingPage() {
     }, 900);
   }
 
+  function runLongRunningTaskDemo() {
+    if (longRunningTask?.status === "processing") {
+      return;
+    }
+
+    const task = startLongRunningTask({
+      key: LONG_RUNNING_TASK_KEY,
+      label: "Long task",
+      ownerPath: "/examples/loading",
+    });
+
+    window.setTimeout(() => {
+      completeLongRunningTask(task.key, { runId: task.runId });
+      notifications.success("Long task completed.");
+    }, LONG_RUNNING_TASK_DELAY_MS);
+  }
+
+  const longRunningTaskStatusLabel =
+    longRunningTask?.status === "processing"
+      ? "Processing"
+      : longRunningTask?.status === "done"
+        ? "Done"
+        : "Idle";
+  const longRunningTaskStatusTone =
+    longRunningTask?.status === "processing"
+      ? "info"
+      : longRunningTask?.status === "done"
+        ? "success"
+        : "neutral";
+
   return (
     <div>
       <PageHeader
@@ -56,6 +97,15 @@ export function ContentLoadingPage() {
             >
               <Timer size={15} />
               Loading Demo
+            </Button>
+            <Button
+              onClick={runLongRunningTaskDemo}
+              disabled={longRunningTask?.status === "processing"}
+              loading={longRunningTask?.status === "processing"}
+              loadingLabel="Running long task"
+            >
+              <Timer size={15} />
+              Long Task
             </Button>
             <Button onClick={() => notifications.info("Toast message demo.")}>
               <Bell size={15} />
@@ -82,6 +132,30 @@ export function ContentLoadingPage() {
           <OnPageLoadingIndicator label="Refreshing example command for 20 seconds" />
         ) : null}
         {error ? <ErrorState message={error} /> : null}
+        <Card>
+          <CardHeader
+            title="Long Task"
+            description="Named background workflow state."
+            actions={
+              <StatusBadge
+                label={longRunningTaskStatusLabel}
+                tone={longRunningTaskStatusTone}
+              />
+            }
+          />
+          <CardBody>
+            <dl className="grid gap-3 text-sm">
+              <Detail
+                label="Task key"
+                value={longRunningTask?.key ?? LONG_RUNNING_TASK_KEY}
+              />
+              <Detail
+                label="Last changed"
+                value={formatTimestamp(longRunningTask?.updatedAt)}
+              />
+            </dl>
+          </CardBody>
+        </Card>
         {data ? (
           <Card>
             <CardHeader

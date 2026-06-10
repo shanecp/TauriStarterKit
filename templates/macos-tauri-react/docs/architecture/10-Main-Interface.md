@@ -10,13 +10,14 @@ Flow:
 src/app/App.tsx
   -> ThemeProvider
   -> PageTopLoadingIndicatorProvider
+  -> LongRunningTaskProvider
   -> NotificationProvider
   -> AppLayout
 ```
 
 `AppLayout` owns client-side navigation state. It reads the current route from `src/app/routes.tsx`, renders `Sidebar`, then renders breadcrumbs and the feature page in `main`.
 
-Keep feature pages focused on their own workflow. Do not put sidebar state, route matching, theme setup, notification mounting, or page-top loading state in feature pages.
+Keep feature pages focused on their own workflow. Do not put sidebar state, route matching, theme setup, notification mounting, page-top loading state, or long-running task store setup in feature pages.
 
 ## Title Separator
 
@@ -52,6 +53,10 @@ Nested routes should keep their parent sidebar item active. Use child paths unde
 ```
 
 `Sidebar` treats child routes as active when the current path starts with the child path.
+
+Sidebar items can opt in to long-running task continuity with `longRunningTaskKey`. The sidebar only observes matching task state and renders a processing or done marker; pages and action areas own starting, completing, and acknowledging those tasks.
+
+The template includes a `Long Running Tasks` preview group with three child pages. Each page starts a separate simulated task so the sidebar markers can be inspected while navigating between pages.
 
 ## Sidebar Size
 
