@@ -6,7 +6,7 @@ import { APP_META } from "../../shared/appMeta";
 import { Button } from "../../shared/components/Button";
 import { Card, CardBody, CardHeader } from "../../shared/components/Card";
 import { ErrorState } from "../../shared/components/ErrorState";
-import { LoadingState } from "../../shared/components/LoadingState";
+import { OnPageLoadingIndicator } from "../../shared/components/OnPageLoadingIndicator";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { StatusBadge } from "../../shared/components/StatusBadge";
 import {
@@ -76,7 +76,7 @@ export function SettingsPage({ activeSection }: SettingsPageProps) {
       />
       <div className="grid gap-5">
         {needsDiagnostics && isInitialLoading ? (
-          <LoadingState label="Loading diagnostics" />
+          <OnPageLoadingIndicator label="Loading diagnostics" />
         ) : null}
         {needsDiagnostics && error ? <ErrorState message={error} /> : null}
         {content}

@@ -1,6 +1,6 @@
 # Main Interface Architecture
 
-The template uses a fixed desktop shell for macOS utility apps. The shell is owned by `src/app/layout/AppLayout.tsx` and keeps global navigation, breadcrumbs, activity feedback, and page content separate.
+The template uses a fixed desktop shell for macOS utility apps. The shell is owned by `src/app/layout/AppLayout.tsx` and keeps global navigation, breadcrumbs, page-top loading feedback, and page content separate.
 
 ## Shell
 
@@ -9,14 +9,14 @@ Flow:
 ```text
 src/app/App.tsx
   -> ThemeProvider
-  -> ActivityProvider
+  -> PageTopLoadingIndicatorProvider
   -> NotificationProvider
   -> AppLayout
 ```
 
 `AppLayout` owns client-side navigation state. It reads the current route from `src/app/routes.tsx`, renders `Sidebar`, then renders breadcrumbs and the feature page in `main`.
 
-Keep feature pages focused on their own workflow. Do not put sidebar state, route matching, theme setup, notification mounting, or global activity state in feature pages.
+Keep feature pages focused on their own workflow. Do not put sidebar state, route matching, theme setup, notification mounting, or page-top loading state in feature pages.
 
 ## Title Separator
 

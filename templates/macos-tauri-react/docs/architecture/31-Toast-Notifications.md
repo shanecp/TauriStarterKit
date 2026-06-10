@@ -1,6 +1,6 @@
 # Toast Notification Architecture
 
-The app uses toast notifications for short-lived action outcomes such as copy, open, save, restart, and command results. Toasts are visual feedback only. They do not keep history, replace inline errors, or replace the global activity indicator.
+The app uses toast notifications for short-lived action outcomes such as copy, open, save, restart, and command results. Toasts are visual feedback only. They do not keep history, replace inline errors, or replace `OnPageLoadingIndicator` or `PageTopLoadingIndicator`.
 
 ## Flow
 
@@ -24,7 +24,7 @@ The provider is mounted once near the app root:
 
 ```text
 ThemeProvider
-  -> ActivityProvider
+  -> PageTopLoadingIndicatorProvider
   -> NotificationProvider
   -> AppLayout
 ```
@@ -57,15 +57,15 @@ loading and actionRunning flags
 empty and unavailable states
 ```
 
-Do not emit automatic success or error toasts from `tauriInvoke`. Routine loads and refreshes should keep using local page state plus the top activity indicator.
+Do not emit automatic success or error toasts from `tauriInvoke`. Routine loads and refreshes should keep using local page state plus `OnPageLoadingIndicator` or an explicit `PageTopLoadingIndicator` when work blocks the page.
 
-## Activity Vs Notifications
+## Loading Vs Notifications
 
-The activity indicator answers: "Is backend work running right now?"
+Loading indicators answer: "Is work running right now?"
 
 Toast notifications answer: "What just happened?"
 
-An action can use both. A Tauri call can show top activity while it runs, then the page can show a toast after the action resolves. The page still owns any durable result or error panel.
+An action can use both. A Tauri call can show `PageTopLoadingIndicator` while it runs, then the page can show a toast after the action resolves. The page still owns any durable result or error panel.
 
 ## Styling
 

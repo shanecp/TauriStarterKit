@@ -1,9 +1,11 @@
-import { tauriInvoke } from "../../shared/lib/tauri";
+import { tauriInvoke, type TauriInvokeOptions } from "../../shared/lib/tauri";
 import type { ExamplePingResponse } from "./example.types";
 
 const TAURI_INTERNALS_PROPERTY = ["", "TAURI_INTERNALS", ""].join("__");
 
-export function examplePing(): Promise<ExamplePingResponse> {
+export function examplePing(
+  options: TauriInvokeOptions = {},
+): Promise<ExamplePingResponse> {
   if (!isTauriRuntime()) {
     return Promise.resolve({
       message: "Browser preview response",
@@ -11,7 +13,7 @@ export function examplePing(): Promise<ExamplePingResponse> {
     });
   }
 
-  return tauriInvoke<ExamplePingResponse>("example_ping");
+  return tauriInvoke<ExamplePingResponse>("example_ping", undefined, options);
 }
 
 function isTauriRuntime(): boolean {

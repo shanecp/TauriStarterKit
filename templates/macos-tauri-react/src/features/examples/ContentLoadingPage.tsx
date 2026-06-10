@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { Button } from "../../shared/components/Button";
 import { Card, CardBody, CardHeader } from "../../shared/components/Card";
 import { ErrorState } from "../../shared/components/ErrorState";
-import { LoadingState } from "../../shared/components/LoadingState";
+import { OnPageLoadingIndicator } from "../../shared/components/OnPageLoadingIndicator";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { StatusBadge } from "../../shared/components/StatusBadge";
 import { useAsyncResource } from "../../shared/hooks/useAsyncResource";
@@ -21,9 +21,14 @@ export function ContentLoadingPage() {
   const load = useCallback(async () => {
     if (hasLoadedExample.current) {
       await delay(REFRESH_DEMO_DELAY_MS);
+      const response = await examplePing();
+      hasLoadedExample.current = true;
+      return response;
     }
 
-    const response = await examplePing();
+    const response = await examplePing({
+      pageTopLoadingIndicatorLabel: "Loading example command",
+    });
     hasLoadedExample.current = true;
     return response;
   }, []);
@@ -70,10 +75,11 @@ export function ContentLoadingPage() {
       />
 
       <div className="grid gap-5">
-        {isDemoLoading ? <LoadingState label="Running loading demo" /> : null}
-        {isInitialLoading ? <LoadingState label="Loading example command" /> : null}
+        {isDemoLoading ? (
+          <OnPageLoadingIndicator label="Running loading demo" />
+        ) : null}
         {isRefreshing ? (
-          <LoadingState label="Refreshing example command for 20 seconds" />
+          <OnPageLoadingIndicator label="Refreshing example command for 20 seconds" />
         ) : null}
         {error ? <ErrorState message={error} /> : null}
         {data ? (

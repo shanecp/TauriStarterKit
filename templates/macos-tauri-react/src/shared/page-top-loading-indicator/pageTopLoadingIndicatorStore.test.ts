@@ -1,14 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ActivityStore } from "./activityStore";
+import { PageTopLoadingIndicatorStore } from "./pageTopLoadingIndicatorStore";
 
-describe("ActivityStore", () => {
+describe("PageTopLoadingIndicatorStore", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  it("keeps concurrent activities active until each activity finishes", () => {
-    const store = new ActivityStore(0);
+  it("keeps concurrent page-top loading entries active until each entry finishes", () => {
+    const store = new PageTopLoadingIndicatorStore(0);
     const firstId = store.start({
       command: "first_command",
       label: "First command",
@@ -39,7 +39,7 @@ describe("ActivityStore", () => {
   it("keeps very fast activity visible for the configured minimum duration", () => {
     vi.useFakeTimers();
 
-    const store = new ActivityStore(300);
+    const store = new PageTopLoadingIndicatorStore(300);
     const id = store.start({
       command: "fast_command",
       label: "Fast command",

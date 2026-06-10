@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getRoute } from "../routes";
 import { Breadcrumbs } from "./Breadcrumbs";
+import { PageTopLoadingIndicator } from "./PageTopLoadingIndicator";
 import { Sidebar } from "./Sidebar";
-import { TopBar } from "./TopBar";
 
 function normalizePath(path: string): string {
   if (!path || path === "/index.html") {
@@ -40,7 +40,7 @@ export function AppLayout() {
     <div className="flex h-screen overflow-hidden border-t border-app-border bg-app-bg text-app-ink">
       <Sidebar currentPath={route.path} onNavigate={navigate} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar />
+        <PageTopLoadingIndicator />
         <main className="min-h-0 flex-1 overflow-auto px-8 py-6">
           <div className="min-w-0 w-full">
             <Breadcrumbs items={route.breadcrumbs} onNavigate={navigate} />

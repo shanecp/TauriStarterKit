@@ -48,21 +48,21 @@ Generated apps include project Codex skills under `.codex/skills`:
 
 Generated apps do not depend on this package by default. The template stays self-contained so a generated app can evolve independently.
 
-## Activity Indicators
+## Loading Indicators
 
-Template doc: [Activity Indicator Architecture](templates/macos-tauri-react/docs/architecture/30-Activity-Indicators.md).
+Template doc: [Loading Indicator Architecture](templates/macos-tauri-react/docs/architecture/30-Loading-Indicators.md).
 
-Use `ActivityProvider` near the app root, render `useActivity()` in the app shell, and route backend calls through `tauriInvoke` or `createTauriInvoke`. The invoke helpers start and finish activity entries with unique IDs, so overlapping commands keep the global indicator visible until all work finishes.
+Use `PageTopLoadingIndicatorProvider` near the app root, render `PageTopLoadingIndicator` in the app shell, and pass `pageTopLoadingIndicatorLabel` through `tauriInvoke` or `createTauriInvoke` only for full-page or blocking work. Calls without a page-top label do not show the page-top indicator.
 
-Use command label maps for app-specific copy:
+Use page-top label maps for app-specific copy:
 
 ```ts
 const invokeCommand = createTauriInvoke<AppCommand>({
-  example_ping: "Checking backend",
+  example_ping: "Loading example command",
 });
 ```
 
-Use `Button loading loadingLabel="..."` only on obvious initiating actions. Keep page-level disabled/busy state responsible for blocking unsafe duplicate actions.
+Use `OnPageLoadingIndicator` for loading or refreshing specific sections of content. Use `Button loading loadingLabel="..."` only on obvious initiating actions. Keep page-level disabled/busy state responsible for blocking unsafe duplicate actions.
 
 ## Toast Notifications
 

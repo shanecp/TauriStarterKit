@@ -80,22 +80,22 @@ pre {
   color: #94a3b8;
 }
 
-.activity-progress {
+.loading-indicator-progress {
   height: 0.25rem;
   overflow: hidden;
   border-radius: 9999px;
   background: var(--color-app-subtle);
 }
 
-.activity-progress__bar {
+.loading-indicator-progress__bar {
   width: 35%;
   height: 100%;
   border-radius: inherit;
   background: var(--color-app-accent);
-  animation: activity-progress 1.2s ease-in-out infinite;
+  animation: loading-indicator-progress 1.2s ease-in-out infinite;
 }
 
-@keyframes activity-progress {
+@keyframes loading-indicator-progress {
   0% {
     transform: translateX(-110%);
   }

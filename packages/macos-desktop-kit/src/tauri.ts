@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 
 import {
-  finishGlobalActivity,
-  startGlobalActivity,
-} from "./activityStore";
+  finishPageTopLoadingIndicator,
+  startPageTopLoadingIndicator,
+} from "./pageTopLoadingIndicatorStore";
 
 export type CommandResult = {
   command_label: string;
@@ -20,8 +20,8 @@ export type EditorAppCommandArgs = {
 };
 
 export type TauriInvokeOptions<CommandName extends string = string> = {
-  activityLabel?: string | false;
-  activityLabels?: Partial<Record<CommandName, string>>;
+  pageTopLoadingIndicatorLabel?: string | false;
+  pageTopLoadingIndicatorLabels?: Partial<Record<CommandName, string>>;
 };
 
 export async function tauriInvoke<T, CommandName extends string = string>(
@@ -29,25 +29,27 @@ export async function tauriInvoke<T, CommandName extends string = string>(
   args?: Record<string, unknown>,
   options: TauriInvokeOptions<CommandName> = {},
 ): Promise<T> {
-  const activityLabel =
-    options.activityLabel === false
+  const pageTopLoadingIndicatorLabel =
+    options.pageTopLoadingIndicatorLabel === false
       ? null
-      : options.activityLabel ?? options.activityLabels?.[command] ?? "Working";
-  const activityId = activityLabel
-    ? startGlobalActivity(command, activityLabel)
+      : options.pageTopLoadingIndicatorLabel ??
+        options.pageTopLoadingIndicatorLabels?.[command] ??
+        null;
+  const pageTopLoadingIndicatorId = pageTopLoadingIndicatorLabel
+    ? startPageTopLoadingIndicator(command, pageTopLoadingIndicatorLabel)
     : null;
 
   try {
     return await invoke<T>(command, args);
   } finally {
-    if (activityId) {
-      finishGlobalActivity(activityId);
+    if (pageTopLoadingIndicatorId) {
+      finishPageTopLoadingIndicator(pageTopLoadingIndicatorId);
     }
   }
 }
 
 export function createTauriInvoke<CommandName extends string>(
-  activityLabels: Partial<Record<CommandName, string>> = {},
+  pageTopLoadingIndicatorLabels: Partial<Record<CommandName, string>> = {},
 ) {
   return function invokeCommand<T>(
     command: CommandName,
@@ -55,7 +57,7 @@ export function createTauriInvoke<CommandName extends string>(
     options: TauriInvokeOptions<CommandName> = {},
   ): Promise<T> {
     return tauriInvoke<T, CommandName>(command, args, {
-      activityLabels,
+      pageTopLoadingIndicatorLabels,
       ...options,
     });
   };

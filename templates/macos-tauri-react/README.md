@@ -66,7 +66,7 @@ Architecture docs:
 
 - [Main Interface Architecture](docs/architecture/10-Main-Interface.md)
 - [Theme Customisation](docs/architecture/20-ThemeCustomisation.md)
-- [Activity Indicator Architecture](docs/architecture/30-Activity-Indicators.md)
+- [Loading Indicator Architecture](docs/architecture/30-Loading-Indicators.md)
 - [Toast Notification Architecture](docs/architecture/31-Toast-Notifications.md)
 - [Debugging Options](docs/architecture/32-Debugging.md)
 - [Data Table Patterns](docs/architecture/40-Data-Tables.md)
@@ -80,13 +80,13 @@ Architecture doc: [Debugging Options](docs/architecture/32-Debugging.md).
 
 Use `npm run tauri:dev` for the default loop. Frontend edits hot reload through Vite, while Rust edits rebuild and restart the Tauri app. Use the WebKit inspector, terminal Rust logs, debug builds, LLDB, the Tauri log plugin, or CrabNebula DevTools depending on the issue.
 
-## Activity Indicators
+## Loading Indicators
 
-Architecture doc: [Activity Indicator Architecture](docs/architecture/30-Activity-Indicators.md).
+Architecture doc: [Loading Indicator Architecture](docs/architecture/30-Loading-Indicators.md).
 
-The template includes central activity tracking in `src/shared/activity`. Commands invoked through `src/shared/lib/tauri.ts` automatically show the top activity indicator and keep it visible for concurrent commands until every command completes.
+The template includes page-top loading tracking in `src/shared/page-top-loading-indicator`. Commands invoked through `src/shared/lib/tauri.ts` show `PageTopLoadingIndicator` only when they pass `pageTopLoadingIndicatorLabel` or a matching `pageTopLoadingIndicatorLabels` map.
 
-When adding a Tauri command, add a short label to `ACTIVITY_LABELS` in `src/shared/lib/tauri.ts`. Use the shared `Button` `loading` prop only on buttons that clearly start work, and keep local disabled state for preventing unsafe duplicate actions.
+Use `PageTopLoadingIndicator` for full-page or blocking work. Use `OnPageLoadingIndicator` for loading or refreshing specific content sections. Use the shared `Button` `loading` prop only on buttons that clearly start work, and keep local disabled state for preventing unsafe duplicate actions.
 
 ## Toast Notifications
 
@@ -94,4 +94,4 @@ Architecture doc: [Toast Notification Architecture](docs/architecture/31-Toast-N
 
 The template includes transient notification support in `src/shared/notifications`. Mounting happens in `src/app/App.tsx`; feature pages call `useNotifications()` for explicit action outcomes such as copy, open, save, and command completion.
 
-Toasts do not keep history and should not replace `ErrorState`, result panels, loading states, or the top activity indicator. See `docs/architecture/31-Toast-Notifications.md`.
+Toasts do not keep history and should not replace `ErrorState`, result panels, `OnPageLoadingIndicator`, or `PageTopLoadingIndicator`. See `docs/architecture/31-Toast-Notifications.md`.

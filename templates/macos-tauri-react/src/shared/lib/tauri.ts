@@ -1,9 +1,9 @@
 import { invoke } from "@tauri-apps/api/core";
 
 import {
-  finishGlobalActivity,
-  startGlobalActivity,
-} from "../activity/activityStore";
+  finishPageTopLoadingIndicator,
+  startPageTopLoadingIndicator,
+} from "../page-top-loading-indicator/pageTopLoadingIndicatorStore";
 
 export type AppCommand = "get_diagnostics" | "example_ping";
 
@@ -21,14 +21,9 @@ export type EditorAppCommandArgs = {
   editorAppName: string;
 };
 
-const ACTIVITY_LABELS: Partial<Record<AppCommand, string>> = {
-  example_ping: "Checking backend",
-  get_diagnostics: "Loading diagnostics",
-};
-
 export type TauriInvokeOptions<CommandName extends string = string> = {
-  activityLabel?: string | false;
-  activityLabels?: Partial<Record<CommandName, string>>;
+  pageTopLoadingIndicatorLabel?: string | false;
+  pageTopLoadingIndicatorLabels?: Partial<Record<CommandName, string>>;
 };
 
 export async function tauriInvoke<T, CommandName extends string = AppCommand>(
@@ -36,28 +31,27 @@ export async function tauriInvoke<T, CommandName extends string = AppCommand>(
   args?: Record<string, unknown>,
   options: TauriInvokeOptions<CommandName> = {},
 ): Promise<T> {
-  const activityLabel =
-    options.activityLabel === false
+  const pageTopLoadingIndicatorLabel =
+    options.pageTopLoadingIndicatorLabel === false
       ? null
-      : options.activityLabel ??
-        options.activityLabels?.[command] ??
-        ACTIVITY_LABELS[command as AppCommand] ??
-        "Working";
-  const activityId = activityLabel
-    ? startGlobalActivity(command, activityLabel)
+      : options.pageTopLoadingIndicatorLabel ??
+        options.pageTopLoadingIndicatorLabels?.[command] ??
+        null;
+  const pageTopLoadingIndicatorId = pageTopLoadingIndicatorLabel
+    ? startPageTopLoadingIndicator(command, pageTopLoadingIndicatorLabel)
     : null;
 
   try {
     return await invoke<T>(command, args);
   } finally {
-    if (activityId) {
-      finishGlobalActivity(activityId);
+    if (pageTopLoadingIndicatorId) {
+      finishPageTopLoadingIndicator(pageTopLoadingIndicatorId);
     }
   }
 }
 
 export function createTauriInvoke<CommandName extends string>(
-  activityLabels: Partial<Record<CommandName, string>> = {},
+  pageTopLoadingIndicatorLabels: Partial<Record<CommandName, string>> = {},
 ) {
   return function invokeCommand<T>(
     command: CommandName,
@@ -65,7 +59,7 @@ export function createTauriInvoke<CommandName extends string>(
     options: TauriInvokeOptions<CommandName> = {},
   ): Promise<T> {
     return tauriInvoke<T, CommandName>(command, args, {
-      activityLabels,
+      pageTopLoadingIndicatorLabels,
       ...options,
     });
   };
