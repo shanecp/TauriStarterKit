@@ -1,0 +1,6 @@
+interface:
+  display_name: "Promote to Upstream Parent"
+  short_description: "Promote reusable changes upstream"
+  default_prompt: "Use $promote-to-upstream-parent to promote this reusable change to the upstream parent repository."
+policy:
+  allow_implicit_invocation: false

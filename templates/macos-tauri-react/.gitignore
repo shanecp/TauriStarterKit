@@ -59,6 +59,8 @@ coverage/
 !.codex/skills/__APP_SLUG__-change-ui-theme/**
 !.codex/skills/__APP_SLUG__-replace-default-icon/
 !.codex/skills/__APP_SLUG__-replace-default-icon/**
+!.codex/skills/promote-to-upstream-parent/
+!.codex/skills/promote-to-upstream-parent/**
 .claude/
 .cursor/
 .windsurf/
