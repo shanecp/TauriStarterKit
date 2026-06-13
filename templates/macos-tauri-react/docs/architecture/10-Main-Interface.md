@@ -82,7 +82,7 @@ minWidth: 960
 minHeight: 680
 ```
 
-Startup sizing is applied in `src-tauri/src/system/window_sizing.rs`. The default target is 80% of the primary screen, clamped to the minimum size.
+Startup sizing is applied in `src-tauri/src/system/window_sizing.rs`. The default target is 80% of the current monitor, clamped to the minimum size, and centered on that same monitor.
 
 Change window sizing in Rust when the app needs a different startup rule. Change `tauri.conf.json` when the app needs different minimum bounds.
 
